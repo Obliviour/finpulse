@@ -1,0 +1,27 @@
+# Private Household Data & Encrypted Vault Artifacts (NEVER COMMIT!)
+private/
+*.enc
+*.zip
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+backup/
+certs/
+.env
+.env.*
+
+# Personal imported bank/tax/medical statements (keep only synthetic CSV samples)
+imports/*
+!imports/samples/
+
+# Local Antigravity session brain & personal restore notes
+.agents/context/
+RESTORE_*.md
+
+# Python / OS / IDE caches
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.DS_Store
+Thumbs.db

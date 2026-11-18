@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinPulse — Personal Wealth, Cash Flow & Financial Intelligence</title>
+  <script>
+    (function () {
+      try {
+        if (localStorage.getItem("finpulse_theme") === "light") {
+          document.documentElement.classList.remove("dark");
+          document.documentElement.classList.add("light");
+        }
+      } catch (e) {}
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            slate: {
+              850: '#131c2e',
+              900: '#0f172a',
+              950: '#070b14'
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-sankey@0.12.1/dist/chartjs-chart-sankey.min.js"></script>
+  <script async src="https://cdn.teller.io/connect/connect.js"></script>
+  <style>
+    :root {
+      --bg-base: #070b14;
+      --bg-header: rgba(11, 17, 32, 0.85);
+      --bg-card: rgba(15, 23, 42, 0.78);
+      --bg-card-hover: rgba(30, 41, 59, 0.75);
+      --bg-inset: rgba(7, 11, 20, 0.65);
+      --bg-elevated: #131c2e;
+      --bg-drawer: rgba(11, 17, 32, 0.97);
+      --border-card: rgba(51, 65, 85, 0.55);
+      --border-subtle: rgba(30, 41, 59, 0.8);
+      --text-main: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
+      --shadow-drawer: -12px 0 40px rgba(0, 0, 0, 0.55);
+    }
+
+    html.light {
+      --bg-base: #f4f6fb;
+      --bg-header: rgba(255, 255, 255, 0.92);
+      --bg-card: #ffffff;
+      --bg-card-hover: #f8fafc;
+      --bg-inset: #f8fafc;
+      --bg-elevated: #f1f5f9;
+      --bg-drawer: rgba(255, 255, 255, 0.98);
+      --border-card: #e2e8f0;
+      --border-subtle: #edf2f7;
+      --text-main: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+      --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.06), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+      --shadow-drawer: -8px 0 32px rgba(15, 23, 42, 0.12);
+    }
+
+    body {
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', Inter, -apple-system, BlinkMacSystemFont, sans-serif;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    }
+
+    .tabular-nums, .font-mono {
+      font-variant-numeric: tabular-nums;
+    }
+
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+    html.light ::-webkit-scrollbar-thumb { background: #cbd5e1; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    html.light ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Semantic Component Surfaces */
+    .card-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      box-shadow: var(--shadow-card);
+      backdrop-filter: blur(12px);
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.15s ease, background-color 0.18s ease;
+    }
+    html.light .card-panel {
+      background: #ffffff !important;
+      background-color: #ffffff !important;
+      border-color: #e2e8f0 !important;
+      color: #0f172a;
+    }
+
+    /* Bento Grid System */
+    .bento-hero {
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.96) 0%, rgba(17, 24, 39, 0.94) 60%, rgba(30, 27, 75, 0.42) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.28);
+      box-shadow: 0 12px 32px -12px rgba(15, 23, 42, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+    html.light .bento-hero {
+      background: linear-gradient(145deg, #ffffff 0%, #f8fafc 60%, #eef2ff 100%);
+      border: 1px solid #c7d2fe;
+      box-shadow: 0 8px 24px -8px rgba(79, 70, 229, 0.14);
+    }
+    .bento-pill-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem;
+      border-radius: 0.85rem;
+    }
+    .cents-muted {
+      opacity: 0.45;
+      font-size: 0.64em;
+      font-weight: 700;
+    }
+
+    .surface-inset {
+      background: var(--bg-inset);
+      border: 1px solid var(--border-card);
+    }
+
+    .surface-elevated {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-card);
+    }
+
+    .inspector-drawer {
+      background: var(--bg-drawer);
+      border-left: 1px solid var(--border-card);
+      box-shadow: var(--shadow-drawer);
+      backdrop-filter: blur(16px);
+    }
+
+    /* Comprehensive Light Mode Overrides for Tailwind Slate/Dark Classes */
+    html.light header[class*="bg-slate-900"],
+    html.light header[class*="bg-slate-950"] {
+      background-color: var(--bg-header) !important;
+      border-color: #e2e8f0 !important;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    html.light [class*="bg-slate-950"],
+    html.light [class*="bg-slate-900"],
+    html.light button[class*="bg-slate-950"],
+    html.light button[class*="bg-slate-900"] {
+      background-color: #f8fafc !important;
+      color: #0f172a !important;
+    }
+
+    html.light .card-panel [class*="bg-slate-950"],
+    html.light .card-panel [class*="bg-slate-900"] {
+      background-color: #f8fafc !important;
+      border-color: #e2e8f0 !important;
+    }
+
+    html.light .inspector-drawer [class*="bg-slate-950"],
+    html.light .inspector-drawer [class*="bg-slate-900"] {
+      background-color: #f8fafc !important;
+    }
+
+    html.light [class*="bg-slate-800"]:not(button[class*="bg-indigo"]):not(.progress-track) {
+      background-color: #f1f5f9 !important;
+      color: #1e293b !important;
+    }
+
+    html.light button[class*="bg-slate-900"]:hover,
+    html.light button[class*="bg-slate-950"]:hover,
+    html.light [class*="hover:bg-slate-800"]:hover,
+    html.light [class*="hover:bg-slate-900"]:hover {
+      background-color: #eef2ff !important;
+    }
+
+    /* Keep gradient accent cards subtle & crisp in Light Mode */
+    html.light [class*="from-indigo-950"],
+    html.light [class*="from-slate-900"] {
+      background-image: linear-gradient(135deg, #eef2ff 0%, #ffffff 60%, #f0fdf4 100%) !important;
+      border-color: #c7d2fe !important;
+    }
+
+    html.light [class*="bg-indigo-950"] {
+      background-color: #eef2ff !important;
+      border-color: #c7d2fe !important;
+    }
+    html.light [class*="bg-emerald-950"] {
+      background-color: #ecfdf5 !important;
+      border-color: #a7f3d0 !important;
+    }
+    html.light [class*="bg-amber-950"] {
+      background-color: #fffbeb !important;
+      border-color: #fde68a !important;
+    }
+    html.light [class*="bg-rose-950"] {
+      background-color: #fff1f2 !important;
+      border-color: #fecdd3 !important;
+    }
+    html.light [class*="bg-cyan-950"] {
+      background-color: #ecfeff !important;
+      border-color: #a5f3fc !important;
+    }
+    html.light [class*="bg-violet-950"],
+    html.light [class*="bg-purple-950"] {
+      background-color: #f5f3ff !important;
+      border-color: #ddd6fe !important;
+    }
+
+    /* Borders in Light Mode */
+    html.light [class*="border-slate-800"],
+    html.light [class*="border-slate-700"] {
+      border-color: #e2e8f0 !important;
+    }
+    html.light [class*="divide-slate-800"] > :not([hidden]) ~ :not([hidden]) {
+      border-color: #e2e8f0 !important;
+    }
+
+    /* Typography in Light Mode — preserve white text ONLY on solid primary buttons/badges */
+    html.light .text-white:not([class*="bg-indigo-600"]):not([class*="bg-indigo-500"]):not([class*="bg-emerald-600"]):not([class*="bg-rose-600"]):not([class*="bg-amber-600"]):not([class*="from-indigo-500"]):not([class*="from-indigo-600"]),
+    html.light .text-slate-100 {
+      color: #0f172a !important;
+    }
+    html.light .text-slate-200 {
+      color: #1e293b !important;
+    }
+    html.light .text-slate-300 {
+      color: #334155 !important;
+    }
+    html.light .text-slate-400 {
+      color: #475569 !important;
+    }
+    html.light .text-slate-500 {
+      color: #64748b !important;
+    }
+
+    /* Semantic Accent Text in Light Mode for high contrast readability */
+    html.light .text-indigo-200,
+    html.light .text-indigo-300,
+    html.light .text-indigo-400 {
+      color: #4338ca !important;
+    }
+    html.light .text-emerald-200,
+    html.light .text-emerald-300,
+    html.light .text-emerald-400 {
+      color: #047857 !important;
+    }
+    html.light .text-amber-200,
+    html.light .text-amber-300,
+    html.light .text-amber-400 {
+      color: #b45309 !important;
+    }
+    html.light .text-rose-200,
+    html.light .text-rose-300,
+    html.light .text-rose-400 {
+      color: #be123c !important;
+    }
+    html.light .text-cyan-200,
+    html.light .text-cyan-300,
+    html.light .text-cyan-400,
+    html.light .text-sky-300,
+    html.light .text-sky-400 {
+      color: #0e7490 !important;
+    }
+    html.light .text-teal-300,
+    html.light .text-teal-400 {
+      color: #0f766e !important;
+    }
+    html.light .text-violet-300,
+    html.light .text-violet-400,
+    html.light .text-purple-300,
+    html.light .text-purple-400 {
+      color: #6d28d9 !important;
+    }
+
+    /* Form Controls in Light Mode */
+    html.light select,
+    html.light input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+    html.light textarea {
+      background-color: #ffffff !important;
+      border-color: #cbd5e1 !important;
+      color: #0f172a !important;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.125rem 0.55rem;
+      border-radius: 9999px;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      line-height: 1.1rem;
+    }
+
+    .inspectable-card {
+      cursor: pointer;
+      position: relative;
+    }
+    .inspectable-card:hover {
+      border-color: rgba(99, 102, 241, 0.55) !important;
+    }
+    .inspectable-active {
+      border-color: #6366f1 !important;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.28), var(--shadow-card) !important;
+    }
+  </style>
+</head>
+<body class="min-h-screen antialiased selection:bg-indigo-500 selection:text-white">
+  <div id="root">
+    <!-- Instant First-Paint Shell while cached scripts initialize (< 30ms FCP) -->
+    <div class="min-h-screen flex flex-col">
+      <header class="border-b px-6 py-3" style="background: var(--bg-header); border-color: var(--border-card);">
+        <div class="max-w-[1600px] mx-auto flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-emerald-500 flex items-center justify-center font-extrabold text-white text-sm">FP</div>
+            <span class="font-extrabold text-base tracking-tight">FinPulse</span>
+            <span class="text-xs px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-400 font-semibold animate-pulse">Loading workspace…</span>
+          </div>
+        </div>
+      </header>
+      <main class="max-w-[1600px] w-full mx-auto px-6 py-6 space-y-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="card-panel rounded-2xl p-5 h-36 animate-pulse"></div>
+          <div class="card-panel rounded-2xl p-5 h-36 animate-pulse"></div>
+          <div class="card-panel rounded-2xl p-5 h-36 animate-pulse"></div>
+          <div class="card-panel rounded-2xl p-5 h-36 animate-pulse"></div>
+        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div class="lg:col-span-8 card-panel rounded-2xl p-5 h-64 animate-pulse"></div>
+          <div class="lg:col-span-4 card-panel rounded-2xl p-5 h-64 animate-pulse"></div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var DB_NAME = "finpulse_compiled_jsx";
+      var STORE = "scripts";
+      var SCRIPTS = [
+        { url: "/kitchen.js?v=20261117h", filename: "kitchen.js" },
+        { url: "/app.js?v=20261117h", filename: "app.js" }
+      ];
+
+      function fnv1a(str) {
+        var h = 2166136261;
+        for (var i = 0; i < str.length; i++) {
+          h ^= str.charCodeAt(i);
+          h += (h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24);
+        }
+        return (h >>> 0).toString(16);
+      }
+
+      function openCacheDb() {
+        return new Promise(function (resolve) {
+          try {
+            if (!window.indexedDB) return resolve(null);
+            var req = indexedDB.open(DB_NAME, 1);
+            req.onupgradeneeded = function (ev) {
+              var db = ev.target.result;
+              if (!db.objectStoreNames.contains(STORE)) {
+                db.createObjectStore(STORE);
+              }
+            };
+            req.onsuccess = function () { resolve(req.result); };
+            req.onerror = function () { resolve(null); };
+          } catch (e) {
+            resolve(null);
+          }
+        });
+      }
+
+      function idbGet(db, key) {
+        return new Promise(function (resolve) {
+          if (!db) return resolve(null);
+          try {
+            var tx = db.transaction(STORE, "readonly");
+            var req = tx.objectStore(STORE).get(key);
+            req.onsuccess = function () { resolve(req.result || null); };
+            req.onerror = function () { resolve(null); };
+          } catch (e) {
+            resolve(null);
+          }
+        });
+      }
+
+      function idbPut(db, key, val) {
+        try {
+          if (!db) return;
+          var tx = db.transaction(STORE, "readwrite");
+          tx.objectStore(STORE).put(val, key);
+        } catch (e) {}
+      }
+
+      Promise.all([
+        openCacheDb(),
+        Promise.all(SCRIPTS.map(function (item) {
+          return fetch(item.url, { cache: "no-cache" }).then(function (r) {
+            if (!r.ok) throw new Error("Failed to load " + item.filename + " (" + r.status + ")");
+            return r.text().then(function (src) {
+              return { item: item, src: src, hashKey: "v4:" + item.filename + ":" + src.length + ":" + fnv1a(src) };
+            });
+          });
+        }))
+      ]).then(function (pair) {
+        var db = pair[0];
+        var files = pair[1];
+        return Promise.all(files.map(function (f) {
+          return idbGet(db, f.hashKey).then(function (cachedCode) {
+            if (cachedCode) return cachedCode;
+            var compiled = Babel.transform(f.src, {
+              presets: [["react", { runtime: "classic" }]],
+              compact: true,
+              filename: f.item.filename
+            }).code;
+            idbPut(db, f.hashKey, compiled);
+            return compiled;
+          });
+        }));
+      }).then(function (compiledList) {
+        for (var i = 0; i < compiledList.length; i++) {
+          var s = document.createElement("script");
+          s.textContent = "(function () {\n" + compiledList[i] + "\n})();";
+          document.body.appendChild(s);
+        }
+      }).catch(function (err) {
+        console.error("FinPulse bootstrap error:", err);
+        var root = document.getElementById("root");
+        if (root) {
+          root.innerHTML = '<div style="padding:2rem;font-family:sans-serif;color:#ef4444"><h2>FinPulse Failed to Load</h2><pre>' + String(err) + '</pre></div>';
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

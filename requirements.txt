@@ -1,0 +1,6 @@
+flask>=1.0.2
+flask-cors>=3.0.4
+requests>=2.18.4
+PyPDF2>=2.12.1
+cryptography>=2.2.2
+pytest>=3.5.1

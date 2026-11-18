@@ -1,0 +1,1230 @@
+{
+  "mode": "demo",
+  "household": {
+    "primary_name": "Jordan",
+    "primary_full_name": "Jordan Riley",
+    "partner_name": "Taylor",
+    "employer_name": "Apex Design Studio",
+    "employer_short": "Apex Design",
+    "home_address": "412 Oakridge Way, Austin, TX 78704",
+    "home_address_short": "412 Oakridge Way",
+    "neighborhood": "South Congress / Zilker (Austin 78704)",
+    "city_state_zip": "Austin, TX 78704",
+    "rsu_symbol": "APXD",
+    "rsu_unvested_symbol": "APXD-RSU",
+    "rsu_company_label": "Apex Design (APXD) Equity",
+    "wa_state_tax_context": false,
+    "filing_status": "single",
+    "state_tax_rate_pct": 0.0,
+    "partner_offset": {
+      "expected_mortgage": 1200.0,
+      "expected_hoa": 150.0,
+      "expected_total": 1350.0,
+      "payroll_label": "Apex Design Studio Payroll",
+      "partner_income_label": "Taylor Transfer (Housing Share)",
+      "payroll_keywords": [
+        "PAYROLL",
+        "TECH CORP",
+        "APEX DESIGN",
+        "DIRECT DEP"
+      ],
+      "partner_keywords": [
+        "TAYLOR",
+        "PARTNER SHARE"
+      ],
+      "venmo_cashout_prefix": "ZELLE FROM TAYLOR",
+      "venmo_mortgage_hoa_min": 1300.0,
+      "venmo_mortgage_min": 1150.0,
+      "venmo_hoa_min": 140.0,
+      "venmo_hoa_max": 200.0,
+      "mortgage_keywords": [
+        "FIRST HOME SERVICING",
+        "MORTGAGE",
+        "BILT RENT"
+      ],
+      "hoa_keywords": [
+        "OAKRIDGE HOA",
+        "HOA"
+      ],
+      "property_tax_keywords": [
+        "TRAVIS COUNTY TAX",
+        "PROPERTY TAX"
+      ],
+      "special_hoa_regular_part": 300.0,
+      "extra_principal_account_label": "Vanguard Individual Brokerage (x8812)",
+      "extra_principal_merchant": "First Home Servicing Extra Principal",
+      "extra_principal_institution": "First Home Servicing",
+      "mortgage_pi_expected": 2140.0,
+      "prepay_draft_keyword": ""
+    },
+    "portfolio": {
+      "fallback_home_value": 545000.0,
+      "fallback_purchase_price": 510000.0,
+      "secular_home_value": 545000.0,
+      "comps_home_value": 525000.0,
+      "initial_down_payment": 125000.0,
+      "original_purchase_loan": 385000.0,
+      "monthly_pi": 2140.0,
+      "monthly_hoa": 300.0,
+      "monthly_rsu_vest_gross": 2030.0,
+      "monthly_rsu_vest_net": 1372.0,
+      "monthly_rsu_vest_net_2028_wa_tax": 1372.0,
+      "comps_home_value_by_ym": {
+        "2025-11": 538000.0,
+        "2025-12": 536000.0,
+        "2026-01": 535000.0,
+        "2026-02": 533000.0,
+        "2026-03": 531000.0,
+        "2026-04": 530000.0,
+        "2026-05": 529000.0,
+        "2026-06": 528000.0,
+        "2026-07": 527000.0,
+        "2026-08": 526000.0,
+        "2026-09": 525500.0,
+        "2026-10": 525000.0
+      },
+      "comps_note": "Synthetic local neighborhood comparison trajectory ($525k comps vs. $545k long-term trend valuation).",
+      "default_prepayment_end_ym": "2026-10",
+      "rsu_and_401k_inflow_by_ym": {
+        "2025-11": {
+          "rsu_net": 1372.0,
+          "k401_contrib": 1650.0
+        },
+        "2025-12": {
+          "rsu_net": 1372.0,
+          "k401_contrib": 1650.0
+        },
+        "2026-01": {
+          "rsu_net": 1372.0,
+          "k401_contrib": 1650.0
+        },
+        "2026-02": {
+          "rsu_net": 1372.0,
+          "k401_contrib": 1650.0
+        },
+        "2026-03": {
+          "rsu_net": 1372.0,
+          "k401_contrib": 1650.0
+        },
+        "2026-04": {
+          "rsu_net": 1372.0,
+          "k401_contrib": 1650.0
+        },
+        "2026-05": {
+          "rsu_net": 1372.0,
+          "k401_contrib": 1650.0
+        },
+        "2026-06": {
+          "rsu_net": 1372.0,
+          "k401_contrib": 1650.0
+        },
+        "2026-07": {
+          "rsu_net": 1372.0,
+          "k401_contrib": 1650.0
+        },
+        "2026-08": {
+          "rsu_net": 1372.0,
+          "k401_contrib": 1650.0
+        },
+        "2026-09": {
+          "rsu_net": 1372.0,
+          "k401_contrib": 1650.0
+        },
+        "2026-10": {
+          "rsu_net": 1372.0,
+          "k401_contrib": 1650.0
+        }
+      },
+      "default_comp_inflow": {
+        "rsu_net": 1372.0,
+        "k401_contrib": 1650.0
+      },
+      "gain_weights": {
+        "equity_awards_pct": 0.15,
+        "retirement_401k_pct": 0.45,
+        "brokerage_hsa_pct": 0.4
+      },
+      "equity_awards_group_label": "Vested Equity Awards (Employer RSUs)",
+      "taxable_group_label": "Taxable Brokerage (Vanguard & Schwab)",
+      "mortgage_group_label": "Primary Residence Mortgage (First Home Servicing)",
+      "property_specs": "3 Bed • 2.5 Bath • 1,920 sq ft • Built 2016",
+      "purchase_date": "January 2024",
+      "default_tax_rate_rsu_withholding": 0.324,
+      "default_wa_2028_combined_tax": 0.324,
+      "unvested_rsu_ticker": "APXD-RSU",
+      "subcurve_market_desc": "Capital appreciation & dividend reinvestment across tax-advantaged retirement funds (~45%), taxable index brokerages (~40%), and vested employer equity (~15%)."
+    }
+  },
+  "mortgage": {
+    "spreadsheet_meta": {
+      "spreadsheet_id": "",
+      "title": "Sample Mortgage Tracker (Demo)",
+      "real_tracker_gid": 0,
+      "real_tracker_65_gid": 0,
+      "real_tracker_url": "",
+      "real_tracker_65_url": ""
+    },
+    "real_tracker_65_actual_excess": {},
+    "real_tracker_575_actual_excess": {
+      "2026-06": {
+        "amount": 2500.0,
+        "formula": "2500",
+        "note": "June extra principal demo payment"
+      },
+      "2026-08": {
+        "amount": 2500.0,
+        "formula": "2500",
+        "note": "August extra principal demo payment"
+      },
+      "2026-10": {
+        "amount": 3000.0,
+        "formula": "3000",
+        "note": "October extra principal demo payment"
+      }
+    },
+    "default_inputs": {
+      "home_address": "412 Oakridge Way, Austin, TX 78704",
+      "neighborhood": "South Congress / Zilker (Austin 78704)",
+      "property_specs": "3 Bed • 2.5 Bath • 1,920 sq ft • Built 2016",
+      "purchase_date": "January 2024",
+      "home_price": 510000.0,
+      "valuation_mode": "comps_cooling",
+      "estimated_home_value": 525000.0,
+      "secular_home_value": 545000.0,
+      "comps_home_value": 525000.0,
+      "annual_home_appreciation_pct": 3.2,
+      "expected_stock_return_pct": 8.0,
+      "stock_cap_gains_tax_pct": 15.0,
+      "include_wa_millionaire_tax": false,
+      "down_payment": 125000.0,
+      "assessed_tax_value": 495000.0,
+      "property_tax_annual": 7800.0,
+      "hoa_monthly": 300.0,
+      "home_insurance_monthly": 145.0,
+      "partner_contribution_monthly": 1200.0,
+      "rent_comparison_monthly": 3200.0,
+      "prev_loan_amount": 385000.0,
+      "prev_rate_pct": 5.85,
+      "prev_term_years": 30,
+      "prev_start_ym": "2024-02",
+      "prev_initial_interest": 0.0,
+      "prev_orig_total_interest": 432650.0,
+      "loan_amount": 360000.0,
+      "rate_pct": 4.85,
+      "term_years": 30,
+      "start_ym": "2025-11",
+      "pre_start_principal_paid": 0.0,
+      "initial_interest_carry": 0.0,
+      "current_ym": "2026-11",
+      "historical_excess": {
+        "2026-06": 2500.0,
+        "2026-08": 2500.0,
+        "2026-10": 3000.0
+      },
+      "future_monthly_excess": 1000.0,
+      "one_time_lump_sum": 15000.0,
+      "one_time_lump_ym": "2026-12",
+      "filing_status": "single",
+      "marginal_tax_rate_pct": 24.0,
+      "salt_deduction": 10000.0,
+      "target_recast_balance": 300000.0,
+      "refi_rate_pct": 4.25,
+      "refi_term_years": 15,
+      "refi_closing_cost": 4000.0
+    },
+    "local_market_comps": [
+      {
+        "address": "412 Oakridge Way, Austin, TX 78704 (Demo Property)",
+        "date": "2024-01",
+        "mls": "ACT-881201",
+        "specs": "3 Bed • 2.5 Bath • 1,920 sq ft • Built 2016",
+        "price": 510000.0,
+        "price_per_sqft": 265.63,
+        "status": "Initial Demo Purchase",
+        "delta_vs_purchase_pct": 0.0
+      },
+      {
+        "address": "418 Oakridge Way, Austin, TX 78704 (Comparable Sale)",
+        "date": "2026-05",
+        "mls": "ACT-914220",
+        "specs": "3 Bed • 2.5 Bath • 1,980 sq ft • Built 2016",
+        "price": 525000.0,
+        "price_per_sqft": 265.15,
+        "status": "Recent Neighborhood Comp",
+        "delta_vs_purchase_pct": 2.94
+      }
+    ],
+    "note_text": "Illustrative fixed-rate loan model showing extra-principal payoff acceleration, IRS $750k cap calculations, and recast monthly relief.",
+    "wa_tax_regime": {
+      "enabled": false,
+      "statute": "State Income & Capital Gains Context",
+      "income_tax_rate_pct": 0.0,
+      "income_tax_threshold_agi": 0.0,
+      "effective_date": "",
+      "combined_top_ordinary_rate_pre_2028_pct": 24.0,
+      "combined_top_ordinary_rate_2028_plus_pct": 24.0,
+      "est_annual_agi_with_rsus": 0.0,
+      "est_agi_above_1m_threshold": 0.0,
+      "est_annual_wa_millionaire_tax_2028": 0.0,
+      "est_monthly_wa_millionaire_tax_2028": 0.0,
+      "wa_cap_gains_standard_deduction": 0.0,
+      "wa_cap_gains_rate_tier1_pct": 0.0,
+      "wa_cap_gains_rate_above_1m_pct": 0.0,
+      "combined_ltcg_rate_under_278k_pct": 15.0,
+      "combined_ltcg_rate_278k_to_1m_pct": 15.0,
+      "combined_ltcg_rate_above_1m_pct": 15.0,
+      "does_wa_tax_increase_mortgage_deduction": false,
+      "mortgage_deduction_rule": "No state income or capital gains tax modeled in this Texas demo profile.",
+      "strategic_actions_2026_2027": [
+        "Keep tax-advantaged retirement accounts (401k + Roth IRA) funded before allocating extra cash to low-rate mortgage principal.",
+        "Compare after-tax expected equity returns against after-tax mortgage interest cost under the IRS $750k loan limit."
+      ]
+    }
+  },
+  "retirement": {
+    "default_age": 34,
+    "default_retirement_age": 55,
+    "default_life_expectancy": 90,
+    "default_filing_status": "single",
+    "default_state_tax_rate_pct": 0.0,
+    "default_annual_rsu_grant": 25000.0,
+    "default_aftertax_401k_annual": 6000.0,
+    "default_employer_match_limit_pct": 6.0,
+    "default_taxable_savings_monthly": 1500.0,
+    "k401_split_keywords": [
+      "401(k)",
+      "apex",
+      "rollover"
+    ],
+    "k401_pretax_balance_ratio": 0.85,
+    "k401_roth_balance_ratio": 0.15,
+    "rsu_model_static": {
+      "enabled": true,
+      "ticker": "APXD",
+      "title": "Sample Employer Equity (APXD) Vesting Schedule",
+      "pool_shares": 320,
+      "vesting_fraction": 0.35,
+      "fallback_price": 140.0,
+      "current_monthly_vest_shares": 14.5,
+      "current_monthly_net_shares": 9.8,
+      "historical_grants_by_year": [
+        {
+          "year": 2025,
+          "shares_granted": 180,
+          "grants_count": 1,
+          "grant_ids": "DEMO-2025A",
+          "value_at_current_price": 25200.0
+        },
+        {
+          "year": 2026,
+          "shares_granted": 200,
+          "grants_count": 1,
+          "grant_ids": "DEMO-2026A",
+          "value_at_current_price": 28000.0
+        }
+      ],
+      "active_grants": [
+        {
+          "grant_date": "02/01/2026",
+          "grant_id": "DEMO-2026A",
+          "granted": 200,
+          "vested": 25,
+          "unvested": 175,
+          "unvested_value": 24500.0,
+          "schedule": "~4.1 sh/mo over 4 years"
+        },
+        {
+          "grant_date": "02/01/2025",
+          "grant_id": "DEMO-2025A",
+          "granted": 180,
+          "vested": 85,
+          "unvested": 95,
+          "unvested_value": 13300.0,
+          "schedule": "~3.8 sh/mo over remaining 25 mos"
+        }
+      ]
+    },
+    "k401_model": {
+      "enabled": true,
+      "plan_name": "APEX DESIGN 401(K) RETIREMENT PLAN",
+      "account_number": "XXXX2049",
+      "as_of": "2026-09-30",
+      "ending_balance": 118420.0,
+      "pretax_total": 100657.0,
+      "roth_in_plan_total": 17763.0,
+      "ytd_beginning_balance": 96200.0,
+      "ytd_employee_pretax": 12400.0,
+      "ytd_employer_match": 4800.0,
+      "ytd_aftertax_mega_backdoor": 4500.0,
+      "ytd_employee_total": 16900.0,
+      "ytd_total_contributions": 21700.0,
+      "ytd_market_gain": 6520.0,
+      "ytd_other_transactions": -6000.0,
+      "ytd_roth_rollout_q1": 6000.0,
+      "ytd_roth_rollout_note": "Illustrative annual Roth conversion flow",
+      "ytd_fees": -12.0,
+      "quarters": [
+        {
+          "quarter": "Q1 2026",
+          "period": "01/01/2026 – 03/31/2026",
+          "beginning_balance": 96200.0,
+          "employee_contributions": 5600.0,
+          "pretax_contrib": 4100.0,
+          "aftertax_contrib": 1500.0,
+          "employer_contributions": 1600.0,
+          "market_gain_loss": -1400.0,
+          "other_transactions": -6000.0,
+          "fees": -4.0,
+          "ending_balance": 95996.0,
+          "ror_1yr_pct": 12.1,
+          "ror_3yr_pct": 10.4,
+          "note": "Q1 demo balance"
+        },
+        {
+          "quarter": "Q2 2026",
+          "period": "04/01/2026 – 06/30/2026",
+          "beginning_balance": 95996.0,
+          "employee_contributions": 5600.0,
+          "pretax_contrib": 4100.0,
+          "aftertax_contrib": 1500.0,
+          "employer_contributions": 1600.0,
+          "market_gain_loss": 5400.0,
+          "other_transactions": 0.0,
+          "fees": -4.0,
+          "ending_balance": 108592.0,
+          "ror_1yr_pct": 14.5,
+          "ror_3yr_pct": 11.2,
+          "note": "Q2 steady contributions"
+        },
+        {
+          "quarter": "Q3 2026",
+          "period": "07/01/2026 – 09/30/2026",
+          "beginning_balance": 108592.0,
+          "employee_contributions": 5700.0,
+          "pretax_contrib": 4200.0,
+          "aftertax_contrib": 1500.0,
+          "employer_contributions": 1600.0,
+          "market_gain_loss": 2532.0,
+          "other_transactions": 0.0,
+          "fees": -4.0,
+          "ending_balance": 118420.0,
+          "ror_1yr_pct": null,
+          "ror_3yr_pct": null,
+          "note": "Q3 closing demo total"
+        }
+      ],
+      "sources": [
+        {
+          "source": "Pre-Tax 401(K)",
+          "tax_bucket": "Pre-Tax",
+          "q3_open": 91800.0,
+          "q3_contrib": 4200.0,
+          "ytd_contrib": 12400.0,
+          "q3_activity": -100.0,
+          "close": 100657.0,
+          "share_pct": 85.0
+        },
+        {
+          "source": "Roth In-Plan Conversion",
+          "tax_bucket": "Roth (Tax-Free)",
+          "q3_open": 16792.0,
+          "q3_contrib": 1500.0,
+          "ytd_contrib": 4500.0,
+          "q3_activity": 971.0,
+          "close": 17763.0,
+          "share_pct": 15.0
+        }
+      ],
+      "funds": [
+        {
+          "symbol": "FXAIX",
+          "name": "Fidelity 500 Index Fund",
+          "asset_class": "US Large-Cap Blend",
+          "ytd_begin": 67200.0,
+          "ytd_contrib": 14000.0,
+          "ytd_market": 3976.0,
+          "q3_end": 85176.0,
+          "weight_pct": 71.93
+        },
+        {
+          "symbol": "FTIHX",
+          "name": "Fidelity Total International Index",
+          "asset_class": "International Equities",
+          "ytd_begin": 14300.0,
+          "ytd_contrib": 1100.0,
+          "ytd_market": 660.0,
+          "q3_end": 16060.0,
+          "weight_pct": 13.56
+        },
+        {
+          "symbol": "SPAXX",
+          "name": "Money Market Settlement Fund",
+          "asset_class": "Cash & Money Market",
+          "ytd_begin": 14700.0,
+          "ytd_contrib": 2484.0,
+          "ytd_market": 0.0,
+          "q3_end": 17184.0,
+          "weight_pct": 14.51
+        }
+      ]
+    }
+  },
+  "reflections": {
+    "essential_need_merchants": [
+      "Bilt Rent Payment",
+      "First Home Servicing Mortgage",
+      "Oakridge HOA",
+      "Con Edison Electric",
+      "Comcast / Xfinity",
+      "Verizon Wireless",
+      "Whole Foods Market",
+      "Trader Joe's",
+      "Costco Wholesale",
+      "Equinox"
+    ],
+    "planned_purchases_seed": [
+      [
+        "Kitchen Pantry & Organization Upgrade",
+        "Home & Utilities",
+        1800.0,
+        "2027-01",
+        "medium",
+        "Built-in shelving project",
+        "planned"
+      ],
+      [
+        "Santa Fe Weekend Driving Trip",
+        "Travel & Transit",
+        1250.0,
+        "2027-03",
+        "low",
+        "Covered via monthly travel sinking fund",
+        "planned"
+      ],
+      [
+        "Gravel Bike Wheelset Upgrade",
+        "Health & Fitness",
+        950.0,
+        "2027-04",
+        "low",
+        "Compare against $850 annual cap",
+        "planned"
+      ]
+    ],
+    "project_patterns": [
+      {
+        "keywords": [
+          "PELOTON",
+          "EQUINOX",
+          "BIKE",
+          "CYCL"
+        ],
+        "group": "Fitness & Cycling Setup",
+        "verdict": "worth_it"
+      },
+      {
+        "keywords": [
+          "HOA",
+          "PROPERTY TAX"
+        ],
+        "group": "Statutory & HOA Fees",
+        "verdict": "forced_need"
+      },
+      {
+        "keywords": [
+          "HOME DEPOT",
+          "LOWE",
+          "ELECTRIC"
+        ],
+        "categories": [
+          "Home & Utilities"
+        ],
+        "group": "Home Maintenance & Upgrades",
+        "verdict": "worth_it"
+      },
+      {
+        "keywords": [
+          "DELTA",
+          "MARRIOTT",
+          "AIRBNB",
+          "UNITED",
+          "HYATT"
+        ],
+        "categories": [
+          "Travel & Transit"
+        ],
+        "group": "Major Trips & Lodging",
+        "verdict": "worth_it"
+      }
+    ],
+    "trips_analysis": {
+      "primary_trip": {
+        "key": "chicago_trip",
+        "tab_label": "Chicago (Summer)",
+        "title": "Chicago Marathon Training & Lakefront Weekend (Sample)",
+        "dates": "Aug 14 – Aug 17, 2026",
+        "airbnb_note": "Stayed at a River North boutique hotel for 3 nights.",
+        "flights_note": "Booked roundtrip economy tickets 6 weeks ahead.",
+        "core_trip_total_ex_art": 1680.0,
+        "art_and_galleries_total": 145.0,
+        "grand_total_with_art": 1825.0,
+        "buckets": [
+          {
+            "category": "Hotels & Lodging",
+            "amount": 920.0,
+            "items": [
+              {
+                "date": "2026-08-17",
+                "merchant": "Hotel Lincoln Chicago",
+                "amount": 920.0,
+                "note": "3 nights near Lincoln Park trails"
+              }
+            ]
+          },
+          {
+            "category": "Flights & Transit",
+            "amount": 410.0,
+            "items": [
+              {
+                "date": "2026-08-14",
+                "merchant": "Southwest Airlines Roundtrip",
+                "amount": 365.0,
+                "note": "AUS <-> MDW"
+              },
+              {
+                "date": "2026-08-15",
+                "merchant": "CTA Transit Pass",
+                "amount": 45.0,
+                "note": "Rail & bus"
+              }
+            ]
+          },
+          {
+            "category": "Dining & Museums",
+            "amount": 495.0,
+            "items": [
+              {
+                "date": "2026-08-16",
+                "merchant": "Local Bakeries & Riverwalk Dining",
+                "amount": 350.0,
+                "note": "Group dinners"
+              },
+              {
+                "date": "2026-08-16",
+                "merchant": "Architecture Center Boat Tour",
+                "amount": 145.0,
+                "note": "2 tickets"
+              }
+            ]
+          }
+        ]
+      },
+      "airbnb_trips": {
+        "title": "Sample Short-Term Lodging Log",
+        "total_airbnb_lodging": 740.0,
+        "bookings": [
+          {
+            "code": "AIRBNB * DEMO-SF-2026",
+            "charge_date": "2026-07-10",
+            "card": "Chase Sapphire Reserve (...3319)",
+            "airbnb_amount": 740.0,
+            "trip_name": "Santa Fe Canyon & Trail Weekend (Demo)",
+            "on_ground_spend": 310.0,
+            "total_trip_cost": 1050.0,
+            "details": "Sample lodging + local dining breakdown."
+          }
+        ]
+      },
+      "upcoming_trip": {
+        "tab_label": "Upcoming Trip",
+        "title": "Upcoming Colorado Foilage Escape (Sample)",
+        "status": "Planned Q4 Sinking Fund Budget",
+        "prepaid_total_with_airbnb": 620.0,
+        "prepaid_savoy_only": 0.0,
+        "items": [
+          {
+            "date": "2026-10-18",
+            "merchant": "Boutique Cabin Reservation",
+            "amount": 620.0,
+            "note": "Pre-booked refundable weekend cabin"
+          }
+        ],
+        "airline_ticket_audit": "Sample itinerary audit placeholder — no real ticket numbers stored in demo mode."
+      }
+    },
+    "user_reflection_insights": {
+      "total_art_cut_back": 145.0,
+      "total_uber_eats_cut_back": 1820.0,
+      "total_garmin_cut_back": 0.0,
+      "bed_frame_lesson_savings": 650.0,
+      "actionable_annual_regret_savings": 2615.0,
+      "highlights": [
+        {
+          "title": "Weekday Delivery Convenience Orders (Demo Highlight)",
+          "amount": 1820.0,
+          "verdict": "cut_back",
+          "summary": "Demo insight: bundling delivery twice a week into 20-minute sheet-pan meals keeps monthly dining budgets predictable.",
+          "rule": "Demo Rule: Cap delivery fees by reserving takeout for Friday evenings."
+        },
+        {
+          "title": "Fitness Studio Membership vs. Home Bike Setup",
+          "amount": 1470.0,
+          "verdict": "worth_it",
+          "summary": "Consistent 4x/week training sessions drive strong cost-per-use value under the sample wellness budget.",
+          "rule": "Keep memberships with 12+ visits/month; cancel idle subscriptions."
+        }
+      ]
+    }
+  },
+  "nutrition": {
+    "ui_copy": {
+      "banner_title": "Jordan & Taylor — Endurance Running & Cycling Fuel, Glucose/Iron Labs & Dining Arbitrage",
+      "banner_subtitle": "Synthetic Demo Module (100% fictional data): Track longitudinal clinical panels, dial in marathon & cycling macros, and compare sheet-pan Mediterranean home cooking against weeknight takeout.",
+      "patient_summary": "Demo Profile: Jordan Riley (Age 34 • 5'11\" • Distance Runner & Road Cyclist)",
+      "lab_source_note": "Fictional demonstration biomarker panel series (2023–2026) modeled for software demonstration.",
+      "lab_chart_labels": [
+        "Mar 2023 (Demo Lab)",
+        "Apr 2025 (Demo Lab)",
+        "Aug 2026 (Demo Lab)",
+        "Projected (Fiber Swap)"
+      ],
+      "lab_subtab_subtitle": "Synthetic Fasting Glucose, HbA1c, Ferritin & ApoB demonstration metrics",
+      "ldl_sim_subtitle": "Toggle synthetic nutrition habits to preview modeled ApoB & Fasting Glucose shifts",
+      "vit_d_location_badge": "Austin Demo Clinic",
+      "workplace_cafe_badge": "WORKPLACE CAFE PLAYBOOK",
+      "workplace_cafe_title": "Smart Campus Cafeteria Swaps for Steady Endurance Energy",
+      "grocery_section_title": "Weekly Demo Grocery Routing (Bulk Staples + Produce)",
+      "meal_system_title": "SHEET-PAN & SKILLET ROTATION • ZERO FANCY EQUIPMENT NEEDED",
+      "meal_system_subtitle": "One 40-minute Sunday Grain + Herb Chicken Tray feeds 4 distinct Mediterranean & Tex-Mex weekday dinners.",
+      "prep_partner_col": "Taylor's Evening Plating Twist",
+      "prep_owner_col": "Jordan's Endurance Fuel Add-On",
+      "zero_cleanup_title": "3 Cleanup Shortcuts for Busy Weeknights",
+      "home_cost_label": "Home Sheet-Pan Dinner Cost for Two (Demo)",
+      "macro_subtab_label": "3. Running Macros, Breakfast, Cafe & Recovery",
+      "activity_day_labels": {
+        "climbing": "Long Run Day",
+        "training": "Tempo Cycle Day",
+        "rest": "Recovery Day"
+      },
+      "goal_options": [
+        {
+          "id": "recomp_performance",
+          "label": "Race Weight + Aerobic Base (Balanced)"
+        },
+        {
+          "id": "lean_send",
+          "label": "Marathon Taper Cut (Light Deficit)"
+        },
+        {
+          "id": "muscle_build",
+          "label": "Winter Base & Strength Block"
+        }
+      ],
+      "activity_options": [
+        {
+          "id": "climbing",
+          "label": "Long Run / Brick Session"
+        },
+        {
+          "id": "training",
+          "label": "Road Cycling / Threshold"
+        },
+        {
+          "id": "rest",
+          "label": "Rest / Mobility Day"
+        }
+      ]
+    },
+    "lab_folder_url": "",
+    "lab_reports_history": [
+      {
+        "id": "2023-03-14",
+        "date": "2023-03-14",
+        "label": "Mar 2023",
+        "lab": "Central Texas Diagnostic (Demo)",
+        "provider": "Sample Clinic Physician, MD",
+        "fasting": true,
+        "age": 31,
+        "vitals": {
+          "height_display": "5' 11\"",
+          "weight_lbs": 175.0,
+          "bmi": 24.4,
+          "bp": "116/74",
+          "pulse": 56
+        },
+        "metrics": {
+          "total_cholesterol": 172,
+          "ldl": 102,
+          "hdl": 58,
+          "triglycerides": 64,
+          "non_hdl": 114,
+          "hba1c": 5.5,
+          "glucose": 101,
+          "vitamin_d": 42,
+          "bun": 15,
+          "creatinine": 0.96,
+          "egfr": 106,
+          "ast": 21,
+          "alt": 19,
+          "hemoglobin": 13.9,
+          "ferritin": 24
+        },
+        "flags": [
+          "Fasting Glucose 101 mg/dL (Mildly above 99 ref)",
+          "Ferritin 24 ng/mL (Low-normal endurance runner store)"
+        ]
+      },
+      {
+        "id": "2025-04-22",
+        "date": "2025-04-22",
+        "label": "Apr 2025",
+        "lab": "Central Texas Diagnostic (Demo)",
+        "provider": "Sample Clinic Physician, MD",
+        "fasting": true,
+        "age": 33,
+        "vitals": {
+          "height_display": "5' 11\"",
+          "weight_lbs": 173.0,
+          "bmi": 24.1,
+          "bp": "114/72",
+          "pulse": 54
+        },
+        "metrics": {
+          "total_cholesterol": 168,
+          "ldl": 96,
+          "hdl": 60,
+          "triglycerides": 60,
+          "non_hdl": 108,
+          "hba1c": 5.6,
+          "glucose": 104,
+          "vitamin_d": 45,
+          "bun": 16,
+          "creatinine": 0.98,
+          "egfr": 104,
+          "ast": 20,
+          "alt": 18,
+          "hemoglobin": 14.2,
+          "ferritin": 29
+        },
+        "flags": [
+          "HbA1c 5.6% (Upper normal)",
+          "Fasting Glucose 104 mg/dL (Slightly elevated)"
+        ]
+      },
+      {
+        "id": "2026-08-19",
+        "date": "2026-08-19",
+        "label": "Aug 2026",
+        "lab": "Hill Country Wellness Labs (Demo)",
+        "provider": "Sample Sports Med Clinic",
+        "fasting": true,
+        "age": 34,
+        "vitals": {
+          "height_display": "5' 11\"",
+          "weight_lbs": 172.0,
+          "bmi": 24.0,
+          "bp": "112/70",
+          "pulse": 52
+        },
+        "metrics": {
+          "total_cholesterol": 164,
+          "ldl": 94,
+          "hdl": 62,
+          "triglycerides": 56,
+          "non_hdl": 102,
+          "hba1c": 5.4,
+          "glucose": 98,
+          "vitamin_d": 46,
+          "bun": 15,
+          "creatinine": 0.95,
+          "egfr": 107,
+          "ast": 19,
+          "alt": 17,
+          "hemoglobin": 14.6,
+          "ferritin": 38
+        },
+        "flags": [
+          "LDL-C 94 mg/dL (Optimal)",
+          "Vitamin D 46 ng/mL (Optimal)",
+          "Ferritin improving from 24 to 38 ng/mL"
+        ]
+      }
+    ],
+    "default_inputs": {
+      "height_cm": 180.3,
+      "wingspan_in": 71.0,
+      "ape_index_plus_in": 0.0,
+      "weight_lbs": 172.0,
+      "target_weight_lbs": 168.0,
+      "age": 34,
+      "sex": "male",
+      "climbing_sessions_wk": 4,
+      "other_training_days_wk": 2,
+      "goal_mode": "recomp_performance",
+      "day_type": "climbing",
+      "lever_sat_fat_cap": true,
+      "lever_soluble_fiber": true,
+      "lever_soy_marine_swap": true,
+      "lever_nuts_sterols_evoo": true,
+      "replace_delivery_meals_wk": 1.5,
+      "replace_dineout_meals_wk": 1.0,
+      "home_meal_cost_for_two": 11.5
+    },
+    "height_display": "5' 11.0\" (180.3 cm)",
+    "wingspan_display": "5' 11.0\" (Neutral 0\" Wingspan)",
+    "training_split_summary": "6 Days/Wk (4 Running + 2 Road Cycling + 1 Rest)",
+    "neat_multiplier": 1.42,
+    "activity_kcal": {
+      "climbing": 520,
+      "training": 410,
+      "rest": 0
+    },
+    "goal_kcal_deltas": {
+      "recomp_performance": [
+        -150,
+        -200,
+        -250
+      ],
+      "lean_send": [
+        -300,
+        -320,
+        -350
+      ],
+      "muscle_build": [
+        200,
+        180,
+        50
+      ]
+    },
+    "protein_g_per_kg": 1.85,
+    "meal_calorie_split_ratios": [
+      {
+        "slot": "Pre-Run Toast + Yogurt Cup (7:00 AM)",
+        "ratio": 0.17,
+        "protein_g": 28,
+        "soluble_fiber_g": 4.5,
+        "sat_fat_max_g": 1.5,
+        "note": "Gentle pre-workout glycogen without GI distress"
+      },
+      {
+        "slot": "Midday Mediterranean Grain Bowl (12:30 PM)",
+        "ratio": 0.32,
+        "protein_g": 42,
+        "soluble_fiber_g": 6.5,
+        "sat_fat_max_g": 3.5,
+        "note": "Farro + roasted herb chicken + greens + olive oil vinaigrette"
+      },
+      {
+        "slot": "Afternoon Citrus & Hummus Snack (4:00 PM)",
+        "ratio": 0.11,
+        "protein_g": 16,
+        "soluble_fiber_g": 3.0,
+        "sat_fat_max_g": 1.0,
+        "note": "Vitamin C boosts plant ferritin absorption"
+      },
+      {
+        "slot": "Sheet-Pan Mediterranean / Tex-Mex Dinner (7:15 PM)",
+        "ratio": 0.3,
+        "protein_g": 44,
+        "soluble_fiber_g": 6.0,
+        "sat_fat_max_g": 3.5,
+        "note": "Single foil-lined pan roast in under 12 active minutes"
+      },
+      {
+        "slot": "Evening Tart Cherry & Cottage Cheese Recovery (9:30 PM)",
+        "ratio": 0.1,
+        "protein_g": 18,
+        "soluble_fiber_g": 2.0,
+        "sat_fat_max_g": 1.5,
+        "note": "Slow-digesting casein for overnight muscle recovery"
+      }
+    ],
+    "baseline_biomarkers": {
+      "primary_metric_label": "LDL-C",
+      "primary_metric_unit": "mg/dL",
+      "current_ldl": 94,
+      "current_non_hdl": 102,
+      "current_trig": 56,
+      "current_vit_d": 46,
+      "target_ldl": 78,
+      "fire_compounding_years": 12,
+      "roi_goal_amount": 15000.0,
+      "roi_goal_label": "% toward $15k annual extra investment goal",
+      "ldl_levers": [
+        {
+          "input_key": "lever_sat_fat_cap",
+          "name": "Swap Creamy Takeout Sauces for Olive Oil / Lemon (<14g Sat Fat)",
+          "drop_pct": 0.08
+        },
+        {
+          "input_key": "lever_soluble_fiber",
+          "name": "12g/day Viscous Fiber (Overnight Oats + Lentils / Black Beans)",
+          "drop_pct": 0.06
+        },
+        {
+          "input_key": "lever_soy_marine_swap",
+          "name": "Atlantic Salmon + Plant Protein Rotation 3x/wk",
+          "drop_pct": 0.04
+        },
+        {
+          "input_key": "lever_nuts_sterols_evoo",
+          "name": "Daily Walnuts / Avocado / Seeds (Monounsaturated Fats)",
+          "drop_pct": 0.03
+        }
+      ],
+      "vitamin_d_protocol": {
+        "current_ng_ml": 46,
+        "target_ng_ml": 50,
+        "status": "Optimal (30–100 ng/mL Ref)",
+        "daily_supplement": "1,000–2,000 IU Vitamin D3 maintenance during winter months",
+        "dietary_boost": "Wild salmon + fortified yogurt + morning outdoor runs",
+        "climbing_impact": "Supports bone stress-fracture resilience across high-mileage marathon training blocks."
+      },
+      "clinical_takeaways": [
+        {
+          "title": "Fasting Glucose Improved (104 → 98 mg/dL) with Post-Run Fiber Anchoring",
+          "badge": "Glucose: Optimal (98)",
+          "severity": "positive",
+          "body": "Demo takeaway: Adding legume/oat soluble fiber and shifting fast-digesting pastries to dedicated pre-run windows smoothed morning glucose excursions."
+        },
+        {
+          "title": "Endurance Ferritin Rebounded (24 → 38 ng/mL)",
+          "badge": "Ferritin: +58%",
+          "severity": "medium",
+          "body": "Demo takeaway: Pairing legumes/greens with vitamin-C-rich citrus and separating coffee by 60 minutes supports aerobic oxygen delivery."
+        }
+      ]
+    },
+    "air_fryer_meals": [
+      {
+        "id": "sheet-pan-herb-salmon",
+        "name": "Sheet-Pan Citrus Herb Salmon & Sweet Potatoes",
+        "replaces": "Delivery Grain Bowl ($34) / Restaurant Entree ($48)",
+        "category": "Mediterranean Sheet-Pan",
+        "appliance": "Oven Sheet Pan (Foil-Lined)",
+        "active_prep_min": 8,
+        "cook_time_min": 14,
+        "air_fryer_temp_f": 425,
+        "cleanup_score": "1 Foil Liner Toss",
+        "ldl_score": "Very Low Sat Fat (2.2g) + High Omega-3",
+        "calories_per_serving": 620,
+        "protein_g": 42,
+        "carbs_g": 54,
+        "fat_g": 24,
+        "sat_fat_g": 2.4,
+        "soluble_fiber_g": 5.5,
+        "cost_for_two": 11.8,
+        "restaurant_cost_for_two": 64.0,
+        "savings_per_night": 52.2,
+        "runner_benefit": "Omega-3 EPA/DHA + steady sweet potato glycogen restoration",
+        "ingredients": [
+          "Salmon fillets (2 x 6 oz)",
+          "Cubed sweet potatoes + broccoli florets",
+          "1 tbsp extra-virgin olive oil + oregano + lemon"
+        ],
+        "steps": [
+          "Toss sweet potatoes with olive oil and oregano on foil-lined pan.",
+          "Roast 10 min at 425F, add salmon fillets + broccoli for final 12 min."
+        ]
+      },
+      {
+        "id": "skillet-black-bean-shakshuka",
+        "name": "15-Min Smoky Chickpea & Black Bean Skillet Bowls",
+        "replaces": "Takeout Tacos ($42)",
+        "category": "Tex-Mex Skillet",
+        "appliance": "Cast-Iron Skillet",
+        "active_prep_min": 6,
+        "cook_time_min": 11,
+        "air_fryer_temp_f": 400,
+        "cleanup_score": "1-Pan Rinse",
+        "ldl_score": "High Soluble Fiber (8g) + Low Sat Fat",
+        "calories_per_serving": 560,
+        "protein_g": 36,
+        "carbs_g": 62,
+        "fat_g": 16,
+        "sat_fat_g": 2.0,
+        "soluble_fiber_g": 8.0,
+        "cost_for_two": 8.4,
+        "restaurant_cost_for_two": 54.0,
+        "savings_per_night": 45.6,
+        "runner_benefit": "High iron + vitamin C tomato pairing plus rich bean fiber",
+        "ingredients": [
+          "Chicken breast strips or firm tofu",
+          "Black beans + fire-roasted crushed tomatoes",
+          "Cumin, smoked paprika, spinach & avocado"
+        ],
+        "steps": [
+          "Sear protein 4 min, pour crushed tomatoes + rinsed black beans + spices.",
+          "Simmer 6 min, wilt spinach, serve with lime and sliced avocado."
+        ]
+      }
+    ],
+    "modular_prep_system": {
+      "philosophy": "Batch cook one versatile Mediterranean protein + whole-grain tray on Sunday so weeknight plates come together in 10 minutes with zero pan scrubbing.",
+      "blocks": [
+        {
+          "step": "1. Roast Herb Chicken Tray (25m hands-off)",
+          "detail": "Season skinless breast strips with lemon zest, garlic & oregano on parchment; yields 5 dinner bases."
+        },
+        {
+          "step": "2. Simmer Whole Grain Pot (Farro + Quinoa)",
+          "detail": "Cook 4 cups savory farro-barley blend in low-sodium broth; keeps 5 days in glass storage."
+        },
+        {
+          "step": "3. Pre-Wash Crisp Greens + Citrus Dressing",
+          "detail": "Jar lemon-EVOO vinaigrette + wash arugula/spinach once for zero-effort side salads."
+        },
+        {
+          "step": "4. Recovery Yogurt & Iron-Boost Kit",
+          "detail": "Portion Greek yogurt jars + pumpkin seeds + frozen tart cherries for post-run snacks."
+        }
+      ],
+      "chameleon_matrix": [
+        {
+          "night": "Mon (Track Workout)",
+          "cuisine": "Greek Lemon Herb Bowl",
+          "base_used": "Herb chicken + warm farro tray",
+          "partner_twist": "Crumbled feta, kalamata olives & warm pita wedges",
+          "owner_efficiency": "Double farro scoop + cherry tomatoes for extra glycogen"
+        },
+        {
+          "night": "Tue (Tempo Bike)",
+          "cuisine": "Smoky Chipotle Burrito Skillet",
+          "base_used": "Neutral chicken + black beans",
+          "partner_twist": "Avocado crema, pickled red onions & cilantro-lime slaw",
+          "owner_efficiency": "High-fiber black bean base + salsa verde"
+        },
+        {
+          "night": "Wed (Mid-Week Run)",
+          "cuisine": "Tuscan White Bean & Spinach Soup",
+          "base_used": "Simmered grain + white beans",
+          "partner_twist": "Crusty sourdough toast rubbed with garlic",
+          "owner_efficiency": "Add extra spinach + vitamin C lemon squeeze for iron absorption"
+        },
+        {
+          "night": "Thu (Threshold Ride)",
+          "cuisine": "Harissa Salmon & Roasted Veggies",
+          "base_used": "Foil-lined salmon sheet pan",
+          "partner_twist": "Tahini yogurt drizzle + toasted pine nuts",
+          "owner_efficiency": "Omega-3 recovery boost under 12 active min"
+        }
+      ],
+      "zero_cleanup_rules": [
+        "Line every oven sheet pan with heavy-duty foil or parchment.",
+        "Store bulk base grains and proteins in wide glass prep containers.",
+        "Wash the single chef knife immediately while dinner simmers."
+      ]
+    },
+    "breakfast_protocol": {
+      "title": "60-Second Pre-Run & Post-Run Fiber Routine",
+      "goal": "Fuel morning mileage comfortably while keeping LDL and glucose steady.",
+      "options": [
+        {
+          "name": "Overnight Oat & Chia Runner Jar",
+          "macros": "380 kcal • 26g Protein • 6g Soluble Fiber",
+          "items": [
+            "1/2 cup rolled oats",
+            "1 tbsp chia seeds",
+            "3/4 cup soy milk",
+            "Blueberries"
+          ]
+        },
+        {
+          "name": "Greek Yogurt Citrus Crunch",
+          "macros": "320 kcal • 32g Protein • 3g Fiber",
+          "items": [
+            "1 cup 0% Greek yogurt",
+            "Sliced strawberries",
+            "2 tbsp chopped walnuts"
+          ]
+        }
+      ]
+    },
+    "workplace_cafe_playbook": {
+      "overview": "Choose grilled lean protein + colorful whole-food sides cleanly rather than creamy dressings or fried entrees.",
+      "green_light": [
+        "Grilled chicken breast or salmon fillets",
+        "Steamed farro, brown rice & roasted veggies",
+        "Black bean & quinoa salad bars with olive oil + vinegar"
+      ],
+      "yellow_light": [
+        "Sandwiches (swap mayo for mustard/hummus)",
+        "Pasta bowls (ask for half sauce)"
+      ],
+      "red_light": [
+        "Cream-based Alfredo/butter curries",
+        "Deep-fried sides & sugary pastry trays"
+      ]
+    },
+    "night_snack_matrix": {
+      "budget_kcal": 260,
+      "items": [
+        {
+          "name": "Tart Cherry Greek Yogurt Cup",
+          "macros": "180 kcal • 18g Protein",
+          "note": "Recovery antioxidants"
+        },
+        {
+          "name": "Roasted Pepitas + Apple Slices",
+          "macros": "210 kcal • 9g Protein",
+          "note": "Zinc + crunch"
+        },
+        {
+          "name": "Cottage Cheese + Cinnamon Berries",
+          "macros": "190 kcal • 20g Protein",
+          "note": "Slow-release casein"
+        }
+      ]
+    },
+    "grocery_store_matrix": [
+      {
+        "store": "Local Superstore (Bulk)",
+        "role": "Grains, frozen salmon, olive oil, oats, coffee",
+        "avg_savings": "~30% below delivery"
+      },
+      {
+        "store": "Neighborhood Grocer",
+        "role": "Fresh leafy greens, berries, bell peppers, sourdough",
+        "avg_savings": "Zero impulse fees"
+      }
+    ]
+  },
+  "pdf_account_aliases": {
+    "schwab_ticker": "",
+    "schwab_unvested_symbol": "",
+    "schwab_account_name": "",
+    "schwab_mask": "",
+    "mortgage_institution": "Mortgage Servicer",
+    "mortgage_account_name": "",
+    "mortgage_mask": "",
+    "mortgage_credit_limit": 0.0,
+    "wf_checking_account_number_token": "",
+    "wf_checking_account_name": "",
+    "wf_checking_mask": "",
+    "wf_card_mask": "",
+    "wf_card_account_name": "",
+    "wf_card_limit": 0.0,
+    "chase_card_mask": "",
+    "chase_card_account_name": "",
+    "chase_card_limit": 0.0,
+    "boa_masks": [],
+    "boa_limits": {},
+    "capone_mask": "",
+    "capone_account_name": "",
+    "capone_limit": 0.0,
+    "paypal_mask": "",
+    "paypal_account_name": "",
+    "paypal_limit": 0.0,
+    "fidelity_accounts": {},
+    "vanguard_401k_tokens": [
+      "401(K)"
+    ],
+    "vanguard_401k_account_name": "",
+    "vanguard_401k_mask": "",
+    "vanguard_accounts": {},
+    "healthequity_account_id": "",
+    "healthequity_mask": "",
+    "healthequity_account_name": ""
+  },
+  "extra_category_rules": []
+}
