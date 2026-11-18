@@ -4940,7 +4940,9 @@ function App() {
                         <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/80 font-mono text-[11px]">
                           <div>
                             <span className="text-slate-400 block font-sans">Cash Invested (Basis):</span>
-                            <strong className="text-white">$740,000 ($470k + $270k)</strong>
+                            <strong className="text-white">
+                              {fmtCurrency(hi.cost_basis_equity || 0)} ({fmtCompact(hi.initial_down_payment || 0)} + {fmtCompact(hi.principal_paid_down || 0)})
+                            </strong>
                           </div>
                           <div>
                             <span className="text-slate-400 block font-sans">Market Equity Today:</span>
@@ -4950,11 +4952,11 @@ function App() {
                           </div>
                           <div>
                             <span className="text-slate-400 block font-sans">5-Yr Projected Value:</span>
-                            <strong className="text-slate-200">{fmtCurrency(activeViewObj.projected_home_value_5yr || 1628519)}</strong>
+                            <strong className="text-slate-200">{fmtCurrency(activeViewObj.projected_home_value_5yr || 0)}</strong>
                           </div>
                           <div>
                             <span className="text-slate-400 block font-sans">10-Yr Projected Value:</span>
-                            <strong className="text-indigo-300">{fmtCurrency(activeViewObj.projected_home_value_10yr || 1798017)}</strong>
+                            <strong className="text-indigo-300">{fmtCurrency(activeViewObj.projected_home_value_10yr || 0)}</strong>
                           </div>
                         </div>
                       </div>
@@ -5058,7 +5060,7 @@ function App() {
                             </p>
                           </div>
                           <span className="badge bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono">
-                            $750k Cap Strategies Beat 100% House by +{fmtCompact((activeStrats.hybrid_750k_no_recast?.total_combined_net_wealth || 3069493) - (activeStrats.all_house?.total_combined_net_wealth || 2973415))} to +{fmtCompact((activeStrats.hybrid_750k?.total_combined_net_wealth || 3114856) - (activeStrats.all_house?.total_combined_net_wealth || 2973415))}
+                            Cap Strategies Build {((activeStrats.hybrid_750k_no_recast?.total_combined_net_wealth || 0) - (activeStrats.all_house?.total_combined_net_wealth || 0)) >= 0 ? "+" : ""}{fmtCompact((activeStrats.hybrid_750k_no_recast?.total_combined_net_wealth || 0) - (activeStrats.all_house?.total_combined_net_wealth || 0))} (B1) to {((activeStrats.hybrid_750k?.total_combined_net_wealth || 0) - (activeStrats.all_house?.total_combined_net_wealth || 0)) >= 0 ? "+" : ""}{fmtCompact((activeStrats.hybrid_750k?.total_combined_net_wealth || 0) - (activeStrats.all_house?.total_combined_net_wealth || 0))} (B2) vs. 100% House
                           </span>
                         </div>
 
@@ -5082,29 +5084,29 @@ function App() {
                               {[
                                 {
                                   id: "all_house",
-                                  name: "A. 100% House First (Pay Mortgage to $0 in ~4.4 Yrs, Then Invest in Stocks)",
+                                  name: "A. 100% House First (Pay Mortgage to $0 Fastest, Then Invest in Stocks)",
                                   badge: "Lowest Interest • Debt-Free Fastest",
                                   badgeCls: "bg-purple-500/20 text-purple-300",
                                   d: activeStrats.all_house,
                                 },
                                 {
                                   id: "hybrid_750k_no_recast",
-                                  name: "B1. $750k Cap — Keep $8,171/mo P&I (No Recast / No Refi, Invest $6.8k/mo in Stocks)",
-                                  badge: "★ Best Balance: 99% Paid Off + Saves $73k Int. vs Recast",
+                                  name: `B1. ${fmtCompact(hi.mortgage_debt_cap || 750000)} Cap — Keep ${fmtCurrency((activeStrats.hybrid_750k_no_recast || activeStrats.hybrid_750k)?.monthly_req_pmt || eq.scheduled_monthly_pmt || 0)}/mo P&I (No Recast)`,
+                                  badge: "★ Best Balance: Lowest After-Tax Debt Drag",
                                   badgeCls: "bg-sky-500/20 text-sky-300 border border-sky-500/40",
                                   d: activeStrats.hybrid_750k_no_recast || activeStrats.hybrid_750k,
                                 },
                                 {
                                   id: "hybrid_750k",
-                                  name: "B2. $750k Cap + Recast P&I to $6,411/mo (Keep 5.75% Rate — Not a Refi; Invest Freed $1,760/mo)",
-                                  badge: "★ Max Wealth Winner (+Pays $73k More Gross Int.)",
+                                  name: `B2. ${fmtCompact(hi.mortgage_debt_cap || 750000)} Cap + Recast P&I to ${fmtCurrency(activeStrats.hybrid_750k?.monthly_req_pmt || 0)}/mo (Keep Existing Rate)`,
+                                  badge: "★ Max Wealth Winner (Frees Cash Flow for Equities)",
                                   badgeCls: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40",
                                   d: activeStrats.hybrid_750k,
                                 },
                                 {
                                   id: "all_market",
-                                  name: "C. 100% Stock Market ($0 Extra Principal; Keep $810k Loan & Invest All $60k + $6.8k/mo)",
-                                  badge: "Max Market Leverage (Loses Tax Shield >$750k)",
+                                  name: "C. 100% Stock Market ($0 Extra Mortgage Principal; Invest All Excess)",
+                                  badge: "Max Market Leverage",
                                   badgeCls: "bg-indigo-500/20 text-indigo-300",
                                   d: activeStrats.all_market,
                                 },

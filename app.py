@@ -1050,12 +1050,16 @@ def _cleanup_stale_port_5000():
 
 
 if __name__ == "__main__":
-    _cleanup_stale_port_5000()
+    port = int(os.environ.get("FINPULSE_PORT", 5000))
+    if port == 5000:
+        _cleanup_stale_port_5000()
     init_db()
-    seed_demo_data_if_empty(force=False)
+    force_demo = os.environ.get("FINPULSE_PROFILE_MODE", "").strip().lower() == "demo"
+    seed_demo_data_if_empty(force=force_demo and bool(os.environ.get("FINPULSE_DB_PATH")))
     print("=================================================================")
     print(" FinPulse Local Personal Finance & Investment Dashboard")
-    print(" Dashboard URL: http://localhost:5000")
+    print(" Dashboard URL: http://localhost:{0}".format(port))
+    print(" Profile Mode:  {0}".format("demo (synthetic)" if force_demo else "auto"))
     print(" Auto-Watch Statement Folder: {0}".format(IMPORTS_DIR))
     print("=================================================================")
-    app.run(host="127.0.0.1", port=5000, debug=False)
+    app.run(host="127.0.0.1", port=port, debug=False)

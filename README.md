@@ -2,7 +2,48 @@
 
 A zero-build, full-stack personal finance and life optimization dashboard built with **Python (Flask + SQLite)** and **React + Chart.js + Tailwind** in a modern Bento layout.
 
-Out of the box, FinPulse runs in **Demo Mode** with realistic synthetic data so you can explore every view safely without touching real financial credentials or personal records. Your own books live separately in an **AES-encrypted local vault** (`private/` + `data/finance.db`, gitignored) managed by [`vault_manager.py`](file:///vault_manager.py).
+Out of the box, FinPulse runs in **Demo Mode** with realistic synthetic data so you can explore every view safely without touching real financial credentials or personal records. Your own books live separately in an **AES-encrypted local vault** (`private/` + `data/finance.db`, gitignored) managed by [`vault_manager.py`](vault_manager.py).
+
+![FinPulse Interactive Workspace Tour (Synthetic Demo Data)](docs/assets/finpulse-tour.gif)
+
+---
+
+## Screenshots (Synthetic Demo Data)
+
+<table>
+  <tr>
+    <td width="50%">
+      <strong>Command Center — Dark Mode</strong><br/>
+      <img src="docs/assets/command-center-dark.png" alt="FinPulse Command Center Dark Mode" />
+    </td>
+    <td width="50%">
+      <strong>Command Center — Crisp Light Mode</strong><br/>
+      <img src="docs/assets/command-center-light.png" alt="FinPulse Command Center Light Mode" />
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <strong>Cash Flow &amp; 12M Cross-Matrix</strong><br/>
+      <img src="docs/assets/cashflow-matrix.png" alt="FinPulse Cash Flow and Matrix" />
+    </td>
+    <td>
+      <strong>Investments, Property Comps &amp; 10-Yr Allocator</strong><br/>
+      <img src="docs/assets/investments-property.png" alt="FinPulse Investments and Property" />
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <strong>Planning, RSU Pipeline &amp; FIRE Monte Carlo</strong><br/>
+      <img src="docs/assets/retirement-fire.png" alt="FinPulse Retirement and RSU Planner" />
+    </td>
+    <td>
+      <strong>Fuel &amp; Biomarker Labs (Sister Perspective)</strong><br/>
+      <img src="docs/assets/fuel-labs.png" alt="FinPulse Fuel and Labs Sister View" />
+    </td>
+  </tr>
+</table>
+
+---
 
 ## Key Workspaces
 
