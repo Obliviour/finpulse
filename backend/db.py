@@ -167,6 +167,13 @@ def init_db():
             net_worth REAL NOT NULL DEFAULT 0,
             is_demo INTEGER DEFAULT 0
         );
+
+        CREATE TABLE IF NOT EXISTS market_price_history (
+            symbol TEXT NOT NULL,
+            price_date TEXT NOT NULL,
+            close_price REAL NOT NULL,
+            PRIMARY KEY (symbol, price_date)
+        );
         """
     )
 

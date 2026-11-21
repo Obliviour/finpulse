@@ -270,6 +270,7 @@ def test_demo_mode_api_never_leaks_private_profile(monkeypatch):
         "/api/retirement",
         "/api/reflections",
         "/api/nutrition",
+        "/api/investments/history?range=6m",
     )
     try:
         for ep in endpoints:
@@ -330,3 +331,38 @@ def test_phase2_and_phase3_math_regressions(monkeypatch):
         conn.execute("DELETE FROM holdings WHERE symbol = 'TESTNOBASIS'")
         conn.commit()
         conn.close()
+
+
+def test_live_investments_history_endpoint(monkeypatch):
+    """Verify /api/investments/history returns mark-to-market summary, series, and movers in Demo Mode."""
+    monkeypatch.setenv("FINPULSE_PROFILE_MODE", "demo")
+    clear_profile_cache()
+
+    client = app.test_client()
+    r6 = client.get("/api/investments/history?range=6m")
+    assert r6.status_code == 200
+    d6 = r6.get_json()
+    assert d6["range"] == "6m"
+    assert d6["include_unvested"] is False
+    assert len(d6["series"]) >= 20
+    for key in (
+        "start_value",
+        "end_value",
+        "dollar_change",
+        "pct_change",
+        "live_tracked_value",
+        "static_value",
+        "live_ticker_count",
+    ):
+        assert key in d6["summary"]
+    assert d6["summary"]["live_ticker_count"] > 0
+    assert isinstance(d6["movers"], list) and len(d6["movers"]) > 0
+    assert isinstance(d6["top_gainers"], list)
+    assert isinstance(d6["top_detractors"], list)
+
+    r1_rsu = client.get("/api/investments/history?range=1m&include_unvested=1")
+    assert r1_rsu.status_code == 200
+    d1 = r1_rsu.get_json()
+    assert d1["range"] == "1m"
+    assert d1["include_unvested"] is True
+    assert d1["summary"]["end_value"] >= d6["summary"]["end_value"]

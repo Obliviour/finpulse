@@ -1,13 +1,29 @@
 import os
 import base64
 import json
-from datetime import datetime
+import random
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, timedelta
 import requests
 from backend.db import get_connection, compute_tx_hash, bump_db_stamp, BASE_DIR
 from backend.categorizer import categorize_transaction
 
 CERTS_DIR = os.path.join(BASE_DIR, "certs")
-CASH_EQUIV_SYMBOLS = {"SPAXX", "FDRXX", "VMFXX", "SWVXX", "SNSXX", "CASH", "USD"}
+CASH_EQUIV_SYMBOLS = {"SPAXX", "FDRXX", "VMFXX", "SWVXX", "SNSXX", "CASH", "USD", "HEQ-CASH"}
+NON_PUBLIC_SYMBOLS = {"HEQ-INV"}
+
+
+def _resolve_yahoo_symbol(symbol, name=""):
+    """Map a holding ticker to a public Yahoo Finance symbol, or None if cash/trust/non-public."""
+    sym = (symbol or "").strip().upper()
+    if not sym or sym in CASH_EQUIV_SYMBOLS or sym in NON_PUBLIC_SYMBOLS:
+        return None
+    if "TRUST" in (name or "").upper():
+        return None
+    if sym.endswith("-RSU"):
+        base = sym[:-4]
+        return base or None
+    return sym
 
 
 def ensure_certs_dir():
@@ -77,57 +93,74 @@ def get_teller_cert_paths():
     return None
 
 
+def _fetch_yahoo_chart(sym, range_str="2d", timeout=5):
+    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+    url = "https://query1.finance.yahoo.com/v8/finance/chart/{0}?interval=1d&range={1}".format(sym, range_str)
+    resp = requests.get(url, headers=headers, timeout=timeout)
+    if resp.status_code != 200:
+        return None
+    data = resp.json()
+    results = data.get("chart", {}).get("result") or []
+    return results[0] if results else None
+
+
 def sync_live_market_prices():
     """
     100% Free live stock/ETF/mutual fund price sync via Yahoo Finance API.
-    Updates all holdings across Vanguard, Fidelity, and Charles Schwab accounts.
+    Updates all holdings across Vanguard, Fidelity, and Charles Schwab accounts,
+    mapping *-RSU grants to their underlying ticker and skipping institutional trusts.
     """
     conn = get_connection()
-    rows = conn.execute("SELECT id, account_id, symbol, shares, current_price FROM holdings").fetchall()
+    rows = conn.execute("SELECT id, account_id, symbol, name, shares, current_price FROM holdings").fetchall()
     if not rows:
         conn.close()
         return {"updated": 0, "symbols": []}
 
-    symbols = sorted(list({r["symbol"].upper() for r in rows if r["symbol"]}))
-    live_quotes = {}
+    yahoo_symbols = sorted({
+        ys for ys in (_resolve_yahoo_symbol(r["symbol"], r["name"]) for r in rows) if ys
+    })
+    live_quotes = {sym: (1.0, 0.0) for sym in CASH_EQUIV_SYMBOLS}
 
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-    }
-
-    for sym in symbols:
-        if sym in CASH_EQUIV_SYMBOLS:
-            live_quotes[sym] = (1.0, 0.0)
-            continue
+    def _quote_one(sym):
         try:
-            url = "https://query1.finance.yahoo.com/v8/finance/chart/{0}?interval=1d&range=2d".format(sym)
-            resp = requests.get(url, headers=headers, timeout=5)
-            if resp.status_code == 200:
-                data = resp.json()
-                meta = data.get("chart", {}).get("result", [{}])[0].get("meta", {})
-                price = meta.get("regularMarketPrice")
-                prev = meta.get("chartPreviousClose") or meta.get("previousClose") or price
-                if price and price > 0:
-                    pct = ((price - prev) / prev * 100.0) if prev and prev > 0 else 0.0
-                    live_quotes[sym] = (round(float(price), 2), round(float(pct), 2))
+            res = _fetch_yahoo_chart(sym, range_str="2d", timeout=5)
+            if not res:
+                return None
+            meta = res.get("meta", {})
+            price = meta.get("regularMarketPrice")
+            prev = meta.get("chartPreviousClose") or meta.get("previousClose") or price
+            if price and price > 0:
+                pct = ((price - prev) / prev * 100.0) if prev and prev > 0 else 0.0
+                return sym, (round(float(price), 2), round(float(pct), 2))
         except Exception:
             pass
+        return None
+
+    if yahoo_symbols:
+        with ThreadPoolExecutor(max_workers=min(8, len(yahoo_symbols))) as pool:
+            for item in pool.map(_quote_one, yahoo_symbols):
+                if item:
+                    live_quotes[item[0]] = item[1]
 
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M")
     updated_count = 0
     affected_accounts = set()
 
     for r in rows:
-        sym = r["symbol"].upper()
-        affected_accounts.add(r["account_id"])
-        if sym in live_quotes:
-            price, pct = live_quotes[sym]
+        raw_sym = (r["symbol"] or "").strip().upper()
+        if raw_sym in CASH_EQUIV_SYMBOLS:
+            q_sym = raw_sym
+        else:
+            q_sym = _resolve_yahoo_symbol(raw_sym, r["name"])
+        if q_sym and q_sym in live_quotes:
+            price, pct = live_quotes[q_sym]
             val = round(float(r["shares"]) * price, 2)
             conn.execute(
                 "UPDATE holdings SET current_price = ?, current_value = ?, day_change_pct = ?, last_updated = ? WHERE id = ?",
                 (price, val, pct, now_str, r["id"]),
             )
             updated_count += 1
+            affected_accounts.add(r["account_id"])
 
     # Recalculate total balance for each investment account (excluding unvested RSU pipeline)
     for acc_id in affected_accounts:
@@ -142,7 +175,353 @@ def sync_live_market_prices():
 
     conn.commit()
     conn.close()
-    return {"updated": updated_count, "symbols": list(live_quotes.keys()), "timestamp": now_str}
+    bump_db_stamp()
+    return {"updated": updated_count, "symbols": sorted(live_quotes.keys()), "timestamp": now_str}
+
+
+def _ensure_market_history_table(conn):
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS market_price_history (
+            symbol TEXT NOT NULL,
+            price_date TEXT NOT NULL,
+            close_price REAL NOT NULL,
+            PRIMARY KEY (symbol, price_date)
+        )
+        """
+    )
+
+
+def sync_live_market_history(range_str="1y", force=False):
+    """Fetch and cache 1-year daily closes from Yahoo Finance for all tracked holdings + SPY."""
+    conn = get_connection()
+    _ensure_market_history_table(conn)
+
+    if not force:
+        row = conn.execute("SELECT value FROM sync_settings WHERE key = 'last_market_history_sync'").fetchone()
+        cnt = conn.execute("SELECT COUNT(*) AS cnt FROM market_price_history").fetchone()["cnt"]
+        if row and cnt > 0:
+            try:
+                last_dt = datetime.fromisoformat(row["value"])
+                if datetime.now() - last_dt < timedelta(hours=4):
+                    conn.close()
+                    return {
+                        "status": "cached",
+                        "symbols_synced": 0,
+                        "points_stored": cnt,
+                        "timestamp": row["value"],
+                    }
+            except Exception:
+                pass
+
+    h_rows = conn.execute("SELECT symbol, name FROM holdings").fetchall()
+    symbols = sorted({
+        ys for ys in (_resolve_yahoo_symbol(r["symbol"], r["name"]) for r in h_rows) if ys
+    } | {"SPY"})
+
+    def _fetch_series(sym):
+        try:
+            res = _fetch_yahoo_chart(sym, range_str=range_str, timeout=6)
+            if not res:
+                return sym, {}
+            timestamps = res.get("timestamp") or []
+            quotes = (res.get("indicators") or {}).get("quote") or [{}]
+            closes = quotes[0].get("close") or []
+            by_date = {}
+            for ts, cl in zip(timestamps, closes):
+                if ts is None or cl is None:
+                    continue
+                try:
+                    c_val = float(cl)
+                except (TypeError, ValueError):
+                    continue
+                if c_val <= 0:
+                    continue
+                dt_str = datetime.utcfromtimestamp(int(ts)).strftime("%Y-%m-%d")
+                by_date[dt_str] = round(c_val, 4)
+            return sym, by_date
+        except Exception:
+            return sym, {}
+
+    all_points = []
+    synced_syms = 0
+    with ThreadPoolExecutor(max_workers=min(8, max(1, len(symbols)))) as pool:
+        futures = [pool.submit(_fetch_series, sym) for sym in symbols]
+        for fut in as_completed(futures):
+            sym, by_date = fut.result()
+            if by_date:
+                synced_syms += 1
+                for dt_str, cl in by_date.items():
+                    all_points.append((sym, dt_str, cl))
+
+    now_iso = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    if all_points:
+        conn.executemany(
+            "INSERT OR REPLACE INTO market_price_history (symbol, price_date, close_price) VALUES (?, ?, ?)",
+            all_points,
+        )
+        conn.execute(
+            "INSERT OR REPLACE INTO sync_settings (key, value, updated_at) VALUES (?, ?, ?)",
+            ("last_market_history_sync", now_iso, now_iso),
+        )
+        conn.commit()
+    conn.close()
+    return {
+        "status": "ok",
+        "symbols_synced": synced_syms,
+        "points_stored": len(all_points),
+        "timestamp": now_iso,
+    }
+
+
+def _simulate_history_map(groups, spy_anchor=580.0, days=180):
+    """Deterministic weekday price series anchored at current prices for demo/offline mode."""
+    end_d = datetime.now().date()
+    dates = []
+    cur = end_d - timedelta(days=days)
+    while cur <= end_d:
+        if cur.weekday() < 5:
+            dates.append(cur.strftime("%Y-%m-%d"))
+        cur += timedelta(days=1)
+    if not dates:
+        dates = [end_d.strftime("%Y-%m-%d")]
+
+    price_map = {}
+    targets = {g["yahoo_symbol"]: g["current_price"] for g in groups if g["yahoo_symbol"] and g["current_price"] > 0}
+    targets.setdefault("SPY", spy_anchor)
+
+    for sym, end_p in targets.items():
+        rng = random.Random(42 + sum(ord(ch) for ch in sym))
+        vals = [float(end_p)]
+        for _ in range(len(dates) - 1):
+            daily_ret = rng.gauss(0.00045, 0.0115)
+            prev_p = max(0.01, vals[-1] / (1.0 + daily_ret))
+            vals.append(prev_p)
+        vals.reverse()
+        price_map[sym] = {d: round(v, 4) for d, v in zip(dates, vals)}
+    return dates, price_map
+
+
+def build_portfolio_market_history(range_key="6m", include_unvested=False, institution=None, allow_live_fetch=True):
+    """Mark current holding share counts to historical market closes over the chosen window."""
+    rk = (range_key or "6m").strip().lower()
+    range_days_map = {"1w": 7, "1m": 30, "3m": 90, "6m": 180, "1y": 365}
+
+    conn = get_connection()
+    _ensure_market_history_table(conn)
+
+    sql = (
+        "SELECT h.symbol, h.name, h.shares, h.current_price, h.current_value, h.day_change_pct, h.asset_class "
+        "FROM holdings h JOIN accounts a ON a.id = h.account_id WHERE 1=1"
+    )
+    params = []
+    if institution and str(institution).strip().lower() != "all":
+        sql += " AND LOWER(a.institution) = LOWER(?)"
+        params.append(str(institution).strip())
+    rows = conn.execute(sql, params).fetchall()
+
+    grouped = {}
+    static_vested_val = 0.0
+    static_unvested_val = 0.0
+    for r in rows:
+        sym = (r["symbol"] or "").strip().upper()
+        name = r["name"] or sym
+        shares = float(r["shares"] or 0.0)
+        cur_val = float(r["current_value"] or 0.0)
+        cur_price = float(r["current_price"] or 0.0)
+        day_pct = float(r["day_change_pct"] or 0.0)
+        is_unv = sym.endswith("-RSU") or "UNVESTED" in (r["asset_class"] or "").upper()
+        y_sym = _resolve_yahoo_symbol(sym, name)
+        if not y_sym or shares <= 0:
+            if is_unv:
+                static_unvested_val += cur_val
+            else:
+                static_vested_val += cur_val
+            continue
+        key = (sym, y_sym, is_unv)
+        g = grouped.setdefault(key, {
+            "symbol": sym,
+            "yahoo_symbol": y_sym,
+            "name": name,
+            "shares": 0.0,
+            "current_value": 0.0,
+            "current_price": cur_price,
+            "day_change_pct": day_pct,
+            "is_unvested": is_unv,
+        })
+        g["shares"] += shares
+        g["current_value"] += cur_val
+        if cur_price > 0:
+            g["current_price"] = cur_price
+
+    groups = list(grouped.values())
+    active_groups = [g for g in groups if include_unvested or not g["is_unvested"]]
+    needed_yahoo = sorted({g["yahoo_symbol"] for g in active_groups} | {"SPY"})
+
+    is_demo_mode = (os.environ.get("FINPULSE_PROFILE_MODE") or "").strip().lower() == "demo"
+    if allow_live_fetch and not is_demo_mode and active_groups:
+        placeholders = ",".join("?" for _ in needed_yahoo)
+        cnt_row = conn.execute(
+            f"SELECT COUNT(*) AS cnt FROM market_price_history WHERE symbol IN ({placeholders})",
+            needed_yahoo,
+        ).fetchone()
+        if not cnt_row or cnt_row["cnt"] == 0:
+            conn.close()
+            sync_live_market_history(range_str="1y", force=False)
+            conn = get_connection()
+            _ensure_market_history_table(conn)
+
+    last_sync_row = conn.execute("SELECT value FROM sync_settings WHERE key = 'last_market_history_sync'").fetchone()
+    last_synced = last_sync_row["value"] if last_sync_row else None
+
+    price_map = {}
+    all_dates_set = set()
+    if needed_yahoo:
+        placeholders = ",".join("?" for _ in needed_yahoo)
+        hist_rows = conn.execute(
+            f"SELECT symbol, price_date, close_price FROM market_price_history WHERE symbol IN ({placeholders}) ORDER BY price_date ASC",
+            needed_yahoo,
+        ).fetchall()
+        for hr in hist_rows:
+            price_map.setdefault(hr["symbol"], {})[hr["price_date"]] = float(hr["close_price"])
+            all_dates_set.add(hr["price_date"])
+    conn.close()
+
+    has_real_history = any(sym != "SPY" and sym in price_map and len(price_map[sym]) >= 2 for sym in needed_yahoo)
+    is_simulated = False
+    if not has_real_history or is_demo_mode:
+        days_back = range_days_map.get(rk, 365 if rk == "1y" else 240)
+        if rk == "ytd":
+            today_d = datetime.now().date()
+            days_back = max(14, (today_d - today_d.replace(month=1, day=1)).days + 7)
+        all_dates, price_map = _simulate_history_map(active_groups, days=max(days_back, 30))
+        is_simulated = True
+    else:
+        spy_dates = sorted(price_map.get("SPY", {}).keys())
+        all_dates = spy_dates if len(spy_dates) >= 5 else sorted(all_dates_set)
+
+    if all_dates:
+        end_dt = datetime.strptime(all_dates[-1], "%Y-%m-%d").date()
+        if rk == "ytd":
+            cutoff = end_dt.replace(month=1, day=1).strftime("%Y-%m-%d")
+        else:
+            days = range_days_map.get(rk, 180)
+            cutoff = (end_dt - timedelta(days=days)).strftime("%Y-%m-%d")
+        dates = [d for d in all_dates if d >= cutoff]
+        if len(dates) < 2 and len(all_dates) >= 2:
+            dates = all_dates[-2:]
+    else:
+        dates = []
+
+    # Forward-fill prices across the active date window
+    filled = {}
+    for sym in needed_yahoo:
+        s_map = price_map.get(sym, {})
+        if not s_map:
+            continue
+        sorted_avail = sorted(s_map.items())
+        # Initialize with the most recent known close on or before the first window date, or earliest available
+        init_price = None
+        if dates:
+            for d_avail, p_avail in sorted_avail:
+                if d_avail <= dates[0]:
+                    init_price = p_avail
+                else:
+                    break
+        if init_price is None:
+            init_price = sorted_avail[0][1]
+        cur_p = init_price
+        sym_series = []
+        for d in dates:
+            if d in s_map:
+                cur_p = s_map[d]
+            sym_series.append(cur_p)
+        filled[sym] = sym_series
+
+    static_total = round(static_vested_val + (static_unvested_val if include_unvested else 0.0), 2)
+    series = []
+    spy_series = filled.get("SPY")
+    spy_start = spy_series[0] if spy_series and spy_series[0] > 0 else None
+    start_port_val = None
+
+    for idx, d in enumerate(dates):
+        live_val = 0.0
+        for g in active_groups:
+            y_sym = g["yahoo_symbol"]
+            p = filled[y_sym][idx] if y_sym in filled else g["current_price"]
+            live_val += g["shares"] * p
+        port_val = round(live_val + static_total, 2)
+        if start_port_val is None:
+            start_port_val = port_val
+        bench_val = round(start_port_val * (spy_series[idx] / spy_start), 2) if (spy_series and spy_start) else None
+        series.append({
+            "date": d,
+            "portfolio_value": port_val,
+            "benchmark_value": bench_val,
+            "live_value": round(live_val, 2),
+            "static_value": static_total,
+        })
+
+    movers = []
+    for g in active_groups:
+        y_sym = g["yahoo_symbol"]
+        s_arr = filled.get(y_sym)
+        if s_arr and len(s_arr) >= 2:
+            p0, p1 = s_arr[0], s_arr[-1]
+        else:
+            p0 = p1 = g["current_price"]
+        d_chg = round((p1 - p0) * g["shares"], 2)
+        pct_chg = round(((p1 - p0) / p0) * 100.0, 2) if p0 > 0 else 0.0
+        movers.append({
+            "symbol": g["symbol"],
+            "yahoo_symbol": y_sym,
+            "name": g["name"],
+            "shares": round(g["shares"], 4),
+            "start_price": round(p0, 2),
+            "end_price": round(p1, 2),
+            "current_value": round(g["shares"] * p1, 2),
+            "dollar_change": d_chg,
+            "pct_change": pct_chg,
+            "day_change_pct": round(g["day_change_pct"], 2),
+            "is_unvested": g["is_unvested"],
+        })
+
+    movers.sort(key=lambda x: x["dollar_change"], reverse=True)
+    top_gainers = [m for m in movers if m["dollar_change"] > 0][:6]
+    top_detractors = sorted([m for m in movers if m["dollar_change"] < 0], key=lambda x: x["dollar_change"])[:6]
+
+    start_v = series[0]["portfolio_value"] if series else round(sum(g["current_value"] for g in active_groups) + static_total, 2)
+    end_v = series[-1]["portfolio_value"] if series else start_v
+    port_d_chg = round(end_v - start_v, 2)
+    port_pct_chg = round((port_d_chg / start_v) * 100.0, 2) if start_v > 0 else 0.0
+
+    bench_pct = None
+    if spy_series and len(spy_series) >= 2 and spy_series[0] > 0:
+        bench_pct = round(((spy_series[-1] - spy_series[0]) / spy_series[0]) * 100.0, 2)
+    alpha_pct = round(port_pct_chg - bench_pct, 2) if bench_pct is not None else None
+
+    live_tracked_val = round(sum(m["current_value"] for m in movers), 2)
+    return {
+        "range": rk,
+        "include_unvested": bool(include_unvested),
+        "is_simulated": is_simulated,
+        "last_synced": last_synced,
+        "summary": {
+            "start_value": start_v,
+            "end_value": end_v,
+            "dollar_change": port_d_chg,
+            "pct_change": port_pct_chg,
+            "benchmark_pct_change": bench_pct,
+            "alpha_pct": alpha_pct,
+            "live_tracked_value": live_tracked_val,
+            "static_value": static_total,
+            "live_ticker_count": len({g["yahoo_symbol"] for g in active_groups}),
+        },
+        "series": series,
+        "movers": movers,
+        "top_gainers": top_gainers,
+        "top_detractors": top_detractors,
+    }
 
 
 def sync_simplefin(setup_token_or_access_url=None):

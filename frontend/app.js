@@ -555,6 +555,12 @@ function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showAllInsights, setShowAllInsights] = useState(false);
 
+  // Live Holdings Mark-to-Market History State
+  const [marketHistory, setMarketHistory] = useState(null);
+  const [marketHistoryLoading, setMarketHistoryLoading] = useState(false);
+  const [marketHistoryRange, setMarketHistoryRange] = useState("6m");
+  const [marketHistoryIncludeRsu, setMarketHistoryIncludeRsu] = useState(false);
+
   // Retirement Planner State
   const [retirementData, setRetirementData] = useState(null);
   const [retirementLoading, setRetirementLoading] = useState(false);
@@ -1131,6 +1137,36 @@ function App() {
     }
   };
 
+  const fetchMarketHistory = async (opts = {}) => {
+    const r = opts.range ?? marketHistoryRange;
+    const incRsu = opts.includeUnvested ?? marketHistoryIncludeRsu;
+    const inst = opts.institution ?? selectedInstitution;
+    const refresh = Boolean(opts.refresh);
+    setMarketHistoryLoading(true);
+    try {
+      const qs = new URLSearchParams({
+        range: r,
+        include_unvested: incRsu ? "1" : "0",
+        institution: inst || "All",
+        refresh: refresh ? "1" : "0",
+      });
+      const res = await fetch(`/api/investments/history?${qs.toString()}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json = await res.json();
+      setMarketHistory(json);
+      if (refresh) {
+        invalidateCaches();
+        fetchDashboard(selectedMonth, selectedInstitution, true);
+        showToast(`Refreshed live Yahoo prices for ${json.summary?.live_ticker_count || 0} tickers!`);
+      }
+    } catch (e) {
+      console.error(e);
+      if (refresh) showToast("Could not refresh live Yahoo prices", "error");
+    } finally {
+      setMarketHistoryLoading(false);
+    }
+  };
+
   const handleSaveReflection = async (merchant, updates) => {
     try {
       const res = await fetch("/api/reflections", {
@@ -1235,6 +1271,12 @@ function App() {
     }
   }, [activeTab, drawerOpen, selectedMonth, selectedInstitution]);
 
+  useEffect(() => {
+    if (activeTab === "investments") {
+      fetchMarketHistory();
+    }
+  }, [activeTab, marketHistoryRange, marketHistoryIncludeRsu, selectedInstitution]);
+
   const handleSyncAll = async () => {
     setSyncingAll(true);
     try {
@@ -1246,6 +1288,7 @@ function App() {
       );
       invalidateCaches();
       fetchDashboard(selectedMonth, selectedInstitution, true);
+      if (activeTab === "investments" || marketHistory) fetchMarketHistory();
       if (drawerOpen) fetchSyncStatus();
     } catch (e) {
       showToast("Sync error", "error");
@@ -1263,6 +1306,7 @@ function App() {
       showToast(`Updated live market prices for ${cnt} holdings via Yahoo Finance!`);
       invalidateCaches();
       fetchDashboard(selectedMonth, selectedInstitution, true);
+      if (activeTab === "investments" || marketHistory) fetchMarketHistory();
     } catch (e) {
       showToast("Could not reach Yahoo Finance API", "error");
     } finally {
@@ -4890,6 +4934,266 @@ function App() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Live Holdings Performance Over Time (Current Shares × Yahoo Finance Daily Closes) */}
+                  {(() => {
+                    const mh = marketHistory || {};
+                    const mhSum = mh.summary || {};
+                    const mhSeries = mh.series || [];
+                    const mhGainers = mh.top_gainers || [];
+                    const mhDetractors = mh.top_detractors || [];
+                    const hasBench = mhSeries.some((pt) => pt.benchmark_value != null);
+                    const mhChartData = {
+                      labels: mhSeries.map((pt) => pt.date),
+                      datasets: [
+                        {
+                          label: "Portfolio (Current Shares)",
+                          data: mhSeries.map((pt) => pt.portfolio_value),
+                          borderColor: "#10b981",
+                          backgroundColor: "rgba(16, 185, 129, 0.12)",
+                          borderWidth: 2.5,
+                          fill: true,
+                          tension: 0.25,
+                          pointRadius: 0,
+                          pointHoverRadius: 4,
+                        },
+                        ...(hasBench
+                          ? [
+                              {
+                                label: "S&P 500 Benchmark (SPY)",
+                                data: mhSeries.map((pt) => pt.benchmark_value),
+                                borderColor: "#6366f1",
+                                backgroundColor: "transparent",
+                                borderWidth: 2,
+                                borderDash: [5, 4],
+                                fill: false,
+                                tension: 0.25,
+                                pointRadius: 0,
+                                pointHoverRadius: 4,
+                              },
+                            ]
+                          : []),
+                      ],
+                    };
+                    const isPos = (mhSum.dollar_change || 0) >= 0;
+                    const alphaPos = (mhSum.alpha_pct || 0) >= 0;
+
+                    return (
+                      <div className="card-panel rounded-2xl p-5 border border-emerald-500/30 space-y-4">
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span
+                                className={`badge border font-mono ${
+                                  mh.is_simulated
+                                    ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
+                                    : "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                                }`}
+                              >
+                                {mh.is_simulated ? "SIMULATED DEMO CURVE" : "LIVE MARKET TRACKER"}
+                              </span>
+                              {mh.last_synced && (
+                                <span className="text-[11px] font-mono text-slate-400">
+                                  Last synced: {mh.last_synced}
+                                </span>
+                              )}
+                            </div>
+                            <h3 className="text-base font-bold text-white mt-1.5">
+                              📈 Live Holdings Performance Over Time
+                            </h3>
+                            <p className="text-xs text-slate-400 mt-0.5">
+                              Mark-to-market using your current share counts × live Yahoo Finance daily closes (no statement upload needed; excludes mid-period buys/sells).
+                            </p>
+                          </div>
+
+                          <div className="flex flex-wrap items-center gap-2">
+                            <div className="inline-flex items-center gap-1 p-1 rounded-xl border border-slate-800 bg-slate-950/70">
+                              {["1w", "1m", "3m", "6m", "ytd", "1y"].map((rk) => (
+                                <button
+                                  key={rk}
+                                  onClick={() => setMarketHistoryRange(rk)}
+                                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold uppercase transition cursor-pointer ${
+                                    marketHistoryRange === rk
+                                      ? "bg-indigo-600 text-white shadow-sm"
+                                      : "text-slate-400 hover:text-white"
+                                  }`}
+                                >
+                                  {rk}
+                                </button>
+                              ))}
+                            </div>
+
+                            <button
+                              onClick={() => setMarketHistoryIncludeRsu(!marketHistoryIncludeRsu)}
+                              className={`px-3 py-1.5 rounded-xl text-xs font-semibold border transition cursor-pointer whitespace-nowrap ${
+                                marketHistoryIncludeRsu
+                                  ? "bg-indigo-600 text-white border-indigo-400"
+                                  : "bg-slate-900 text-slate-300 border-slate-700 hover:border-indigo-500"
+                              }`}
+                            >
+                              {marketHistoryIncludeRsu ? "✓ Unvested RSUs Included" : "Include Unvested RSUs"}
+                            </button>
+
+                            <button
+                              onClick={() => fetchMarketHistory({ refresh: true })}
+                              disabled={marketHistoryLoading}
+                              className="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 text-white transition cursor-pointer whitespace-nowrap"
+                            >
+                              {marketHistoryLoading ? "Refreshing…" : "⟳ Refresh Live Prices"}
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                          <div className="p-3.5 rounded-xl bg-slate-950/75 border border-slate-800">
+                            <div className="text-[10px] font-bold uppercase text-slate-400">Mark-to-Market Value</div>
+                            <div className="text-lg font-extrabold font-mono text-white mt-1">
+                              {fmtCurrency(mhSum.end_value || 0)}
+                            </div>
+                            <div className="text-[11px] text-slate-400 font-mono mt-0.5">
+                              Start: {fmtCompact(mhSum.start_value || 0)}
+                            </div>
+                          </div>
+
+                          <div className="p-3.5 rounded-xl bg-slate-950/75 border border-slate-800">
+                            <div className="text-[10px] font-bold uppercase text-slate-400">
+                              Period Change ({marketHistoryRange.toUpperCase()})
+                            </div>
+                            <div className={`text-lg font-extrabold font-mono mt-1 ${isPos ? "text-emerald-400" : "text-rose-400"}`}>
+                              {isPos ? "+" : ""}{fmtCurrency(mhSum.dollar_change || 0)}
+                            </div>
+                            <div className={`text-[11px] font-mono font-semibold mt-0.5 ${isPos ? "text-emerald-400" : "text-rose-400"}`}>
+                              {isPos ? "+" : ""}{mhSum.pct_change ?? 0}% price return
+                            </div>
+                          </div>
+
+                          <div className="p-3.5 rounded-xl bg-slate-950/75 border border-slate-800">
+                            <div className="text-[10px] font-bold uppercase text-slate-400">vs. S&amp;P 500 (Alpha)</div>
+                            <div className={`text-lg font-extrabold font-mono mt-1 ${alphaPos ? "text-emerald-400" : "text-rose-400"}`}>
+                              {mhSum.alpha_pct != null ? `${alphaPos ? "+" : ""}${mhSum.alpha_pct}%` : "—"}
+                            </div>
+                            <div className="text-[11px] text-slate-400 font-mono mt-0.5">
+                              SPY: {mhSum.benchmark_pct_change != null ? `${mhSum.benchmark_pct_change >= 0 ? "+" : ""}${mhSum.benchmark_pct_change}%` : "—"}
+                            </div>
+                          </div>
+
+                          <div className="p-3.5 rounded-xl bg-slate-950/75 border border-slate-800">
+                            <div className="text-[10px] font-bold uppercase text-slate-400">Live Tickers Tracked</div>
+                            <div className="text-lg font-extrabold font-mono text-indigo-300 mt-1">
+                              {mhSum.live_ticker_count || 0} tickers
+                            </div>
+                            <div className="text-[11px] text-slate-400 font-mono mt-0.5">
+                              {fmtCompact(mhSum.live_tracked_value || 0)} live · {fmtCompact(mhSum.static_value || 0)} static
+                            </div>
+                          </div>
+                        </div>
+
+                        {mhSeries.length >= 2 ? (
+                          <ChartCanvas
+                            type="line"
+                            height={240}
+                            isDark={isDark}
+                            data={mhChartData}
+                            options={{
+                              interaction: { mode: "index", intersect: false },
+                              scales: {
+                                x: {
+                                  ticks: {
+                                    color: isDark ? "#94a3b8" : "#475569",
+                                    maxTicksLimit: 8,
+                                    font: { size: 10 },
+                                  },
+                                  grid: { color: isDark ? "rgba(51,65,85,0.2)" : "rgba(226,232,240,0.8)" },
+                                },
+                                y: {
+                                  ticks: {
+                                    color: isDark ? "#94a3b8" : "#475569",
+                                    callback: (v) => fmtCompact(v),
+                                  },
+                                  grid: { color: isDark ? "rgba(51,65,85,0.25)" : "rgba(226,232,240,0.8)" },
+                                },
+                              },
+                              plugins: {
+                                legend: {
+                                  position: "bottom",
+                                  labels: { color: isDark ? "#cbd5e1" : "#334155", font: { size: 11 }, boxWidth: 12 },
+                                },
+                                tooltip: {
+                                  callbacks: {
+                                    label: (ctx) => `${ctx.dataset.label}: ${fmtCurrency(ctx.parsed.y)}`,
+                                  },
+                                },
+                              },
+                            }}
+                          />
+                        ) : (
+                          <div className="h-[200px] flex items-center justify-center rounded-xl border border-slate-800 text-xs text-slate-400">
+                            {marketHistoryLoading ? "Loading historical market closes…" : "Click Refresh Live Prices to fetch historical closes."}
+                          </div>
+                        )}
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pt-1">
+                          <div className="p-3.5 rounded-xl bg-slate-950/60 border border-emerald-500/25">
+                            <div className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 mb-2">
+                              Top Gainers ({marketHistoryRange.toUpperCase()})
+                            </div>
+                            {mhGainers.length === 0 ? (
+                              <div className="text-xs text-slate-500">No positive movers in this window.</div>
+                            ) : (
+                              <div className="space-y-1.5">
+                                {mhGainers.map((m) => (
+                                  <div key={`${m.symbol}-${m.is_unvested ? "u" : "v"}`} className="flex items-center justify-between text-xs">
+                                    <div className="flex items-center gap-2 min-w-0">
+                                      <span className="font-mono font-bold text-white">{m.symbol}</span>
+                                      {m.is_unvested && (
+                                        <span className="badge bg-indigo-500/20 text-indigo-300 font-mono">RSU</span>
+                                      )}
+                                      <span className="text-[11px] text-slate-400 font-mono truncate">
+                                        {Number(m.shares || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })} sh
+                                      </span>
+                                    </div>
+                                    <div className="font-mono text-right shrink-0">
+                                      <span className="text-emerald-400 font-bold">+{fmtCurrency(m.dollar_change)}</span>{" "}
+                                      <span className="text-[11px] text-emerald-300">(+{m.pct_change}%)</span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="p-3.5 rounded-xl bg-slate-950/60 border border-rose-500/25">
+                            <div className="text-[11px] font-bold uppercase tracking-wider text-rose-400 mb-2">
+                              Top Detractors ({marketHistoryRange.toUpperCase()})
+                            </div>
+                            {mhDetractors.length === 0 ? (
+                              <div className="text-xs text-slate-500">No negative movers in this window.</div>
+                            ) : (
+                              <div className="space-y-1.5">
+                                {mhDetractors.map((m) => (
+                                  <div key={`${m.symbol}-${m.is_unvested ? "u" : "v"}`} className="flex items-center justify-between text-xs">
+                                    <div className="flex items-center gap-2 min-w-0">
+                                      <span className="font-mono font-bold text-white">{m.symbol}</span>
+                                      {m.is_unvested && (
+                                        <span className="badge bg-indigo-500/20 text-indigo-300 font-mono">RSU</span>
+                                      )}
+                                      <span className="text-[11px] text-slate-400 font-mono truncate">
+                                        {Number(m.shares || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })} sh
+                                      </span>
+                                    </div>
+                                    <div className="font-mono text-right shrink-0">
+                                      <span className="text-rose-400 font-bold">{fmtCurrency(m.dollar_change)}</span>{" "}
+                                      <span className="text-[11px] text-rose-300">({m.pct_change}%)</span>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
 
                   {/* Primary Residence Real Estate, 2-Mode Valuation Comps & 10-Year Allocation Strategies */}
                   <div className="card-panel rounded-2xl p-5 border border-purple-500/30 bg-gradient-to-r from-purple-950/25 via-slate-900 to-indigo-950/25 space-y-5">

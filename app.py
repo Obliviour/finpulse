@@ -25,6 +25,8 @@ from backend.profile_loader import (
 )
 from backend.connectors import (
     sync_live_market_prices,
+    sync_live_market_history,
+    build_portfolio_market_history,
     sync_simplefin,
     sync_teller,
     get_setting,
@@ -929,10 +931,30 @@ def api_open_folder():
     return jsonify({"status": "ok", "watch_dir": IMPORTS_DIR})
 
 
+@app.route("/api/investments/history", methods=["GET"])
+def api_investments_history():
+    range_key = request.args.get("range", "6m")
+    inc_raw = (request.args.get("include_unvested") or "").strip().lower()
+    include_unvested = inc_raw in ("1", "true", "yes")
+    institution = request.args.get("institution", "All")
+    refresh_raw = (request.args.get("refresh") or "").strip().lower()
+    is_demo = os.environ.get("FINPULSE_PROFILE_MODE", "").strip().lower() == "demo"
+    if refresh_raw in ("1", "true", "yes") and not is_demo:
+        sync_live_market_history(range_str="1y", force=True)
+        sync_live_market_prices()
+    data = build_portfolio_market_history(
+        range_key=range_key,
+        include_unvested=include_unvested,
+        institution=institution,
+    )
+    return jsonify(data)
+
+
 @app.route("/api/sync/market-prices", methods=["POST"])
 def api_sync_market_prices():
     res = sync_live_market_prices()
-    return jsonify({"status": "ok", "result": res})
+    hist_res = sync_live_market_history(range_str="1y", force=True)
+    return jsonify({"status": "ok", "result": res, "history": hist_res})
 
 
 @app.route("/api/sync/simplefin", methods=["POST"])
