@@ -509,9 +509,12 @@ function App() {
   const [activeTab, setActiveTab] = useState(() => {
     const p = window.location.pathname || "";
     const s = window.location.search || "";
-    return p === "/kitchen" || s.includes("kitchen") ? "kitchen" : "overview";
+    if (p === "/rehab" || p.endsWith("/rehab") || s.includes("rehab")) return "rehab";
+    if (p === "/kitchen" || p.endsWith("/kitchen") || s.includes("kitchen")) return "kitchen";
+    return "overview";
   });
   const [kitchenSubTab, setKitchenSubTab] = useState("labs");
+  const [rehabSubTab, setRehabSubTab] = useState("triage");
   const [privacyMode, setPrivacyMode] = useState(() => localStorage.getItem("finpulse_privacy") === "1");
   PRIVACY_MODE = privacyMode;
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -3434,6 +3437,7 @@ function App() {
     { id: "excess", label: "Needs vs. Excess", icon: "⚖️" },
     { id: "transactions", label: "Transactions", icon: "🧾" },
     { id: "kitchen", label: "Fuel, Labs & Kitchen (Sister)", icon: "🥗" },
+    { id: "rehab", label: "Climbing Rehab & PT Coach (Sister)", icon: "🧗" },
   ];
   const paletteCommands = [
     ...TAB_DEFS.map((t, i) => ({ group: "Go to tab", icon: t.icon, label: t.label, shortcut: String(i + 1), run: () => setActiveTab(t.id) })),
@@ -3514,7 +3518,7 @@ function App() {
                     try { window.history.replaceState(null, "", "/"); } catch (e) {}
                   }}
                   className={`px-2.5 py-0.5 rounded-full transition ${
-                    activeTab !== "kitchen"
+                    !["kitchen", "rehab"].includes(activeTab)
                       ? "bg-indigo-600 text-white shadow"
                       : "text-slate-400 hover:text-white"
                   }`}
@@ -3536,11 +3540,25 @@ function App() {
                 >
                   Fuel &amp; Labs
                 </button>
+                <button
+                  onClick={() => {
+                    setActiveTab("rehab");
+                    try { window.history.replaceState(null, "", "/rehab"); } catch (e) {}
+                  }}
+                  className={`px-2.5 py-0.5 rounded-full transition whitespace-nowrap ${
+                    activeTab === "rehab"
+                      ? "bg-amber-600 text-white shadow"
+                      : "text-amber-400 hover:text-amber-300"
+                  }`}
+                  title="Sister Dashboard: Climbing Injury Rehab, Guided PT Timers & Body Diagnostics"
+                >
+                  Rehab &amp; PT
+                </button>
               </div>
             </div>
           </div>
 
-          {/* Primary 4-Workspace Navigation (or Sister Dashboard Sub-Tabs when in Fuel & Labs Mode) */}
+          {/* Primary 4-Workspace Navigation (or Sister Dashboard Sub-Tabs when in Fuel & Labs / Rehab & PT Mode) */}
           {activeTab === "kitchen" ? (
             <nav className={`flex items-center gap-1 p-1 rounded-xl border ${
               isDark ? "bg-emerald-950/40 border-emerald-700/50" : "bg-emerald-50 border-emerald-200"
@@ -3558,6 +3576,30 @@ function App() {
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                     kitchenSubTab === st.id
                       ? "bg-emerald-600 text-white shadow-sm"
+                      : "text-slate-400 hover:text-white hover:bg-slate-800/50"
+                  }`}
+                >
+                  {st.label}
+                </button>
+              ))}
+            </nav>
+          ) : activeTab === "rehab" ? (
+            <nav className={`flex items-center gap-1 p-1 rounded-xl border ${
+              isDark ? "bg-amber-950/35 border-amber-700/50" : "bg-amber-50 border-amber-200"
+            }`}>
+              {[
+                { id: "triage", label: "Triage & Body Map" },
+                { id: "workout", label: "Guided Timer" },
+                { id: "protocols", label: "Protocols & History" },
+                { id: "mobility", label: "Mobility Screen" },
+                { id: "history", label: "Coach Log" },
+              ].map((st) => (
+                <button
+                  key={st.id}
+                  onClick={() => setRehabSubTab(st.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                    rehabSubTab === st.id
+                      ? "bg-amber-600 text-white shadow-sm"
                       : "text-slate-400 hover:text-white hover:bg-slate-800/50"
                   }`}
                 >
@@ -3741,7 +3783,7 @@ function App() {
         }`}
       >
         {/* Global Lens & Household Vital Strip (1-click cross-view controls) */}
-        {activeTab !== "kitchen" && (
+        {!["kitchen", "rehab"].includes(activeTab) && (
           <div className="space-y-2">
             {/* Contextual Workspace Sub-Navigation Strip */}
             {["spending", "excess", "transactions"].includes(activeTab) && (
@@ -10096,6 +10138,17 @@ function App() {
               setActiveTab("overview");
               try { window.history.replaceState(null, "", "/"); } catch (e) {}
             }}
+          />
+        )}
+
+        {/* ==================== SISTER DASHBOARD: CLIMBING INJURY REHAB, PT TIMERS & BODY DIAGNOSTICS ==================== */}
+        {activeTab === "rehab" && window.RehabCoachDashboard && (
+          <window.RehabCoachDashboard
+            activeSubTab={rehabSubTab}
+            setActiveSubTab={setRehabSubTab}
+            isDark={isDark}
+            ChartCanvas={ChartCanvas}
+            showToast={showToast}
           />
         )}
       </main>

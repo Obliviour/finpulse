@@ -148,6 +148,19 @@ def _extract_private_tokens(profile_data):
     if len(lab_url) >= 12:
         text_tokens.add(lab_url)
 
+    rehab = profile_data.get("rehab") or {}
+    ath = rehab.get("athlete_profile") or {}
+    for k in ("anatomy_summary", "long_warmup_notes"):
+        val = str(ath.get(k) or "").strip()
+        if len(val) >= 20:
+            text_tokens.add(val)
+    for inj in rehab.get("seed_injuries") or []:
+        if isinstance(inj, dict):
+            for k in ("title", "symptoms", "anatomy_note", "notes"):
+                val = str(inj.get(k) or "").strip()
+                if len(val) >= 20:
+                    text_tokens.add(val)
+
     def _walk_aliases(obj, key_hint=""):
         if isinstance(obj, dict):
             for k, v in obj.items():
@@ -270,6 +283,7 @@ def test_demo_mode_api_never_leaks_private_profile(monkeypatch):
         "/api/retirement",
         "/api/reflections",
         "/api/nutrition",
+        "/api/rehab",
         "/api/investments/history?range=6m",
     )
     try:

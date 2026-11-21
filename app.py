@@ -9,6 +9,7 @@ from backend.analytics import get_dashboard_summary, get_category_detail, get_mo
 from backend.retirement_api import retirement_bp
 from backend.mortgage_api import mortgage_bp
 from backend.nutrition_api import nutrition_bp
+from backend.rehab_api import rehab_bp
 from backend.ingestor import (
     ingest_file_content,
     ingest_pdf_bytes,
@@ -45,6 +46,7 @@ app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
 app.register_blueprint(retirement_bp)
 app.register_blueprint(mortgage_bp)
 app.register_blueprint(nutrition_bp)
+app.register_blueprint(rehab_bp)
 
 
 _GZIP_STATIC_CACHE = {}
@@ -69,7 +71,7 @@ def add_no_cache_headers(response):
             response.direct_passthrough = False
         body = response.get_data()
         if len(body) >= 1024:
-            if request.path in ("/app.js", "/kitchen.js", "/", "/index.html"):
+            if request.path in ("/app.js", "/kitchen.js", "/rehab.js", "/", "/index.html"):
                 cache_k = (request.path, len(body), body[:128], body[-128:])
                 compressed = _GZIP_STATIC_CACHE.get(cache_k)
                 if compressed is None:
@@ -88,6 +90,7 @@ def add_no_cache_headers(response):
 
 @app.route("/")
 @app.route("/kitchen")
+@app.route("/rehab")
 def serve_index():
     return send_from_directory(FRONTEND_DIR, "index.html")
 

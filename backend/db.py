@@ -174,6 +174,68 @@ def init_db():
             close_price REAL NOT NULL,
             PRIMARY KEY (symbol, price_date)
         );
+
+        CREATE TABLE IF NOT EXISTS rehab_injuries (
+            id TEXT PRIMARY KEY,
+            title TEXT NOT NULL,
+            body_region TEXT NOT NULL,
+            side TEXT DEFAULT 'bilateral',
+            tissue_type TEXT DEFAULT 'tendon',
+            suspected_grade TEXT DEFAULT 'Grade 1',
+            phase TEXT DEFAULT 'subacute',
+            status TEXT DEFAULT 'active',
+            onset_date TEXT DEFAULT '',
+            mechanism TEXT DEFAULT '',
+            symptoms TEXT DEFAULT '',
+            anatomy_note TEXT DEFAULT '',
+            climbing_modifications TEXT DEFAULT '',
+            red_flags TEXT DEFAULT '',
+            protocol_id TEXT DEFAULT '',
+            notes TEXT DEFAULT '',
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            is_demo INTEGER DEFAULT 0
+        );
+
+        CREATE TABLE IF NOT EXISTS rehab_daily_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            log_date TEXT NOT NULL,
+            injury_id TEXT NOT NULL,
+            pain_rest INTEGER DEFAULT 0,
+            pain_load INTEGER DEFAULT 0,
+            morning_stiffness INTEGER DEFAULT 0,
+            swelling INTEGER DEFAULT 0,
+            warmup_minutes INTEGER DEFAULT 0,
+            climbed_today INTEGER DEFAULT 0,
+            session_rpe INTEGER DEFAULT 0,
+            notes TEXT DEFAULT '',
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(log_date, injury_id)
+        );
+
+        CREATE TABLE IF NOT EXISTS rehab_workout_sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_date TEXT NOT NULL,
+            protocol_id TEXT NOT NULL,
+            protocol_title TEXT NOT NULL,
+            duration_sec INTEGER DEFAULT 0,
+            exercises_completed INTEGER DEFAULT 0,
+            total_exercises INTEGER DEFAULT 0,
+            post_pain INTEGER DEFAULT 0,
+            notes TEXT DEFAULT '',
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE TABLE IF NOT EXISTS rehab_assessments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            assessed_date TEXT NOT NULL,
+            test_id TEXT NOT NULL,
+            left_val REAL,
+            right_val REAL,
+            bilateral_val REAL,
+            unit TEXT DEFAULT '',
+            notes TEXT DEFAULT '',
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        );
         """
     )
 

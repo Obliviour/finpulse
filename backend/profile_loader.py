@@ -80,6 +80,10 @@ def get_nutrition_profile():
     return get_profile().get("nutrition", {})
 
 
+def get_rehab_profile():
+    return get_profile().get("rehab", {})
+
+
 def get_pdf_account_aliases():
     return get_profile().get("pdf_account_aliases", {})
 

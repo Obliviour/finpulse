@@ -1189,6 +1189,78 @@
       }
     ]
   },
+  "rehab": {
+    "athlete_profile": {
+      "sport": "Distance Running & Recreational Bouldering",
+      "anatomy_summary": "Neutral proportions; high weekly mileage volume with posterior-chain tightness and lateral knee tracking fatigue.",
+      "long_warmup_notes": "Calves and lateral hips require an 8-10 minute progressive warm-up before hard efforts.",
+      "session_frequency": "6 Days/Wk (4 Running + 2 Cycling + 1 Rest)"
+    },
+    "seed_injuries": [
+      {
+        "id": "demo_achilles_tendon",
+        "title": "Left Mid-Portion Achilles Tendinopathy",
+        "body_region": "calf_achilles",
+        "side": "left",
+        "tissue_type": "tendon",
+        "suspected_grade": "Reactive / Sub-Acute Tendinopathy",
+        "phase": "subacute",
+        "status": "active",
+        "onset_date": "2026-10-18",
+        "mechanism": "Sudden ramp-up in hill repeats and steep toeing.",
+        "symptoms": "Morning tendon stiffness for first 10 minutes; 3/10 ache on single-leg hops.",
+        "anatomy_note": "Stiff ankle dorsiflexion shifts tensile load onto the mid-portion Achilles.",
+        "climbing_modifications": "Pause plyometrics and steep bouldering; keep flat-floor heavy slow calf raises <= 3/10.",
+        "red_flags": "Sudden audible pop, visible divot, or pain >= 6/10 escalating next morning.",
+        "protocol_id": "achilles_calf_hsr",
+        "notes": "Demo synthetic record: responds well to 45s isometric holds and heavy slow resistance."
+      },
+      {
+        "id": "demo_it_band_knee",
+        "title": "Right Lateral Knee Irritation (ITB / Lateral Hip)",
+        "body_region": "knee",
+        "side": "right",
+        "tissue_type": "tendon",
+        "suspected_grade": "Grade 1 Overuse",
+        "phase": "strengthening",
+        "status": "active",
+        "onset_date": "2026-10-05",
+        "mechanism": "Downhill volume and late-run hip drop.",
+        "symptoms": "2/10 lateral knee tightness after 35 minutes of activity.",
+        "anatomy_note": "Glute medius endurance deficit allows femoral internal rotation under load.",
+        "climbing_modifications": "Avoid deep drop-knees; focus on controlled lateral step-downs and hip abduction.",
+        "red_flags": "Joint line locking, catching, effusion swelling, or sharp giving way.",
+        "protocol_id": "knee_itb_hip_strength",
+        "notes": "Demo synthetic record: progressing well with banded clamshells and step-downs."
+      }
+    ],
+    "seed_logs": [
+      {
+        "log_date": "2026-11-18",
+        "injury_id": "demo_achilles_tendon",
+        "pain_rest": 1,
+        "pain_load": 3,
+        "morning_stiffness": 3,
+        "swelling": 0,
+        "warmup_minutes": 10,
+        "climbed_today": 1,
+        "session_rpe": 6,
+        "notes": "Warmed up well after isometric calf raises."
+      },
+      {
+        "log_date": "2026-11-18",
+        "injury_id": "demo_it_band_knee",
+        "pain_rest": 0,
+        "pain_load": 2,
+        "morning_stiffness": 1,
+        "swelling": 0,
+        "warmup_minutes": 10,
+        "climbed_today": 1,
+        "session_rpe": 6,
+        "notes": "Zero discomfort during lateral step-downs."
+      }
+    ]
+  },
   "pdf_account_aliases": {
     "schwab_ticker": "",
     "schwab_unvested_symbol": "",
