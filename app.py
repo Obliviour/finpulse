@@ -632,6 +632,9 @@ def api_reflections():
         })
 
     n_months = max(1, len(monthly_series))
+    sum_housing_net = round(sum(x["housing_fixed_net"] for x in monthly_series), 2)
+    sum_housing_gross = round(sum(x["housing_fixed_gross"] for x in monthly_series), 2)
+    sum_routine_living = round(sum(x["utilities_subs_groceries_ent"] for x in monthly_series), 2)
     sum_nec_net = round(sum(x["necessary_total_net"] for x in monthly_series), 2)
     sum_nec_gross = round(sum(x["necessary_total_gross"] for x in monthly_series), 2)
     sum_every_disc = round(sum(x["everyday_discretionary"] for x in monthly_series), 2)
@@ -645,6 +648,9 @@ def api_reflections():
     spending_tiers = {
         "months_analyzed": n_months,
         "partner_monthly_offset": partner_monthly,
+        "housing_fixed_net_monthly": round(sum_housing_net / n_months, 2),
+        "housing_fixed_gross_monthly": round(sum_housing_gross / n_months, 2),
+        "routine_living_monthly": round(sum_routine_living / n_months, 2),
         "necessary_net_annual": sum_nec_net,
         "necessary_net_monthly": round(sum_nec_net / n_months, 2),
         "necessary_gross_annual": sum_nec_gross,

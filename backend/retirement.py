@@ -866,6 +866,8 @@ def run_plan(inputs, observed_net_annual=None, mc_runs=600, seed=42):
 
     # 3. Monte Carlo Simulation
     successes = 0
+    l_runs = min(200, mc_runs)
+    base_l_succ = 0
     all_paths_real = []  # shape: (runs, num_years)
 
     for i in range(mc_runs):
@@ -874,9 +876,12 @@ def run_plan(inputs, observed_net_annual=None, mc_runs=600, seed=42):
         )
         if not is_dep:
             successes += 1
+            if i < l_runs:
+                base_l_succ += 1
         all_paths_real.append(path_real)
 
     mc_success_pct = round(successes / float(mc_runs) * 100.0, 1)
+    base_l_succ_pct = round(base_l_succ / float(l_runs) * 100.0, 1) if l_runs > 0 else mc_success_pct
 
     # Percentile bands (p10, p25, p50, p75, p90) by age
     num_years = len(det_proj)
@@ -947,7 +952,6 @@ def run_plan(inputs, observed_net_annual=None, mc_runs=600, seed=42):
         mod_inp.update(l["diff"])
         l_sched = _precompute_work_schedule(mod_inp) if l["needs_sched"] else work_sched
         succ = 0
-        l_runs = 200
         for r_i in range(l_runs):
             _, is_dep, _ = simulate_single_path(mod_inp, seed=seed + r_i, _work_sched=l_sched, collect_projection=False)
             if not is_dep:
@@ -962,7 +966,7 @@ def run_plan(inputs, observed_net_annual=None, mc_runs=600, seed=42):
             "label": l["label"],
             "diff": l["diff"],
             "success_pct": l_succ_pct,
-            "success_delta_pts": round(l_succ_pct - mc_success_pct, 1),
+            "success_delta_pts": round(l_succ_pct - base_l_succ_pct, 1),
             "nest_egg_real_delta": round(mod_nest_real - nest_egg_at_ret_real, 2),
         })
 

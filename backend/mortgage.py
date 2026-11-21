@@ -1212,6 +1212,7 @@ def run_mortgage_analysis(raw_inputs=None):
             "property_specs": inputs.get("property_specs", "Primary Residence"),
             "purchase_date": inputs.get("purchase_date", ""),
             "home_price": inputs["home_price"],
+            "purchase_price": round(float(inputs["home_price"]), 2),
             "estimated_home_value": round(est_home_val, 2),
             "unrealized_appreciation": unrealized_appreciation,
             "appreciation_pct": appreciation_pct,

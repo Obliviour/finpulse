@@ -553,6 +553,7 @@ function App() {
 
   // Settings & Data Drawer
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [showAllInsights, setShowAllInsights] = useState(false);
 
   // Retirement Planner State
   const [retirementData, setRetirementData] = useState(null);
@@ -1213,6 +1214,10 @@ function App() {
     }, 180);
     return () => clearTimeout(t);
   }, [dashboard]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [activeTab]);
 
   useEffect(() => {
     if (activeTab === "transactions") {
@@ -2419,7 +2424,7 @@ function App() {
               </div>
               <button
                 onClick={() => toggleInspector({ key: "nw-main", type: "networth", driver: "all", month: nwLatest.month })}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition ${
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition whitespace-nowrap shrink-0 ${
                   isNwInspected
                     ? "bg-indigo-600 text-white border-indigo-500"
                     : "bg-slate-900 border-slate-700 text-indigo-300 hover:border-indigo-500"
@@ -2833,7 +2838,7 @@ function App() {
             <thead>
               <tr className="border-b border-slate-800 text-slate-400 uppercase text-[10px]">
                 <th
-                  className="py-2.5 px-3 text-left sticky left-0 z-10 border-r border-slate-800 min-w-[220px]"
+                  className="py-2.5 px-2.5 text-left sticky left-0 z-10 border-r border-slate-800 min-w-[190px]"
                   style={{ backgroundColor: "var(--bg-card)" }}
                 >
                   Category / Top Merchant
@@ -2841,7 +2846,7 @@ function App() {
                 {explorerMonths.map((m) => {
                   const isAct = m.month === selectedMonth;
                   return (
-                    <th key={m.month} className="py-2 px-1.5 text-right min-w-[74px]">
+                    <th key={m.month} className="py-2 px-1 text-right min-w-[58px] whitespace-nowrap">
                       <button
                         onClick={() => {
                           setSelectedMonth(m.month);
@@ -2852,7 +2857,7 @@ function App() {
                             forceOpen: true,
                           });
                         }}
-                        className={`px-1.5 py-1 rounded font-bold transition cursor-pointer ${
+                        className={`px-1 py-1 rounded font-bold transition cursor-pointer ${
                           isAct
                             ? "bg-indigo-600 text-white"
                             : "text-slate-300 hover:text-indigo-400 hover:bg-slate-800/60"
@@ -2864,8 +2869,8 @@ function App() {
                     </th>
                   );
                 })}
-                <th className="py-2.5 px-2.5 text-right border-l border-slate-800 min-w-[82px]">12M Total</th>
-                <th className="py-2.5 px-2.5 text-right min-w-[74px]">12M Avg</th>
+                <th className="py-2.5 px-2 text-right border-l border-slate-800 min-w-[70px] whitespace-nowrap">12M Total</th>
+                <th className="py-2.5 px-2 text-right min-w-[64px] whitespace-nowrap">12M Avg</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800/60">
@@ -2877,7 +2882,7 @@ function App() {
                 return (
                   <tr key={row.id} className="bg-slate-900/45 hover:bg-slate-800/40 font-semibold">
                     <td
-                      className={`py-2 px-3 sticky left-0 z-10 border-r border-slate-800 ${row.tone}`}
+                      className={`py-2 px-2.5 sticky left-0 z-10 border-r border-slate-800 ${row.tone}`}
                       style={{ backgroundColor: "var(--bg-card)" }}
                     >
                       {row.label}
@@ -2896,7 +2901,7 @@ function App() {
                               forceOpen: true,
                             })
                           }
-                          className={`py-2 px-2 text-right font-mono cursor-pointer hover:underline ${
+                          className={`py-2 px-1.5 text-right font-mono cursor-pointer hover:underline whitespace-nowrap ${
                             val > 0 ? row.tone : "text-slate-600"
                           } ${m.month === selectedMonth ? "ring-1 ring-inset ring-indigo-500/30" : ""}`}
                           title={`Inspect ${row.label} in ${fmtMonthLabel(m.month)}`}
@@ -2905,10 +2910,10 @@ function App() {
                         </td>
                       );
                     })}
-                    <td className={`py-2 px-2.5 text-right font-mono border-l border-slate-800 ${row.tone}`}>
+                    <td className={`py-2 px-2 text-right font-mono border-l border-slate-800 whitespace-nowrap ${row.tone}`}>
                       {fmtCompact(total12m)}
                     </td>
-                    <td className="py-2 px-2.5 text-right font-mono text-slate-300">
+                    <td className="py-2 px-2 text-right font-mono text-slate-300 whitespace-nowrap">
                       {fmtCompact(avg12m)}
                     </td>
                   </tr>
@@ -2928,13 +2933,13 @@ function App() {
                   <React.Fragment key={cat}>
                     <tr className="hover:bg-slate-800/40 transition">
                       <td
-                        className="py-2 px-3 sticky left-0 z-10 border-r border-slate-800"
+                        className="py-2 px-2.5 sticky left-0 z-10 border-r border-slate-800"
                         style={{ backgroundColor: "var(--bg-card)" }}
                       >
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => toggleMatrixCat(cat)}
-                            className="w-5 h-5 rounded bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white flex items-center justify-center text-[10px] font-bold shrink-0 cursor-pointer transition"
+                            className="w-5 h-5 rounded bg-slate-800/90 border border-slate-700 hover:border-indigo-500 text-slate-200 hover:text-indigo-400 flex items-center justify-center text-[10px] font-bold shrink-0 cursor-pointer transition"
                             title={isExp ? `Collapse ${cat} merchants` : `Expand top ${merchList.length} merchants in ${cat}`}
                           >
                             {isExp ? "▾" : "▸"}
@@ -2978,7 +2983,7 @@ function App() {
                                   ? `rgba(99, 102, 241, ${(0.06 + ratio * 0.28).toFixed(2)})`
                                   : undefined,
                             }}
-                            className={`py-2 px-2 text-right font-mono cursor-pointer transition hover:ring-1 hover:ring-inset hover:ring-indigo-400 ${
+                            className={`py-2 px-1.5 text-right font-mono cursor-pointer transition hover:ring-1 hover:ring-inset hover:ring-indigo-400 whitespace-nowrap ${
                               val > 0 ? "text-slate-100 font-semibold" : "text-slate-600"
                             } ${m.month === selectedMonth ? "ring-1 ring-inset ring-indigo-500/40" : ""}`}
                             title={`${cat} · ${fmtMonthLabel(m.month)}: ${fmtCurrency(val)} (Click to inspect)`}
@@ -2987,10 +2992,10 @@ function App() {
                           </td>
                         );
                       })}
-                      <td className="py-2 px-2.5 text-right font-mono font-bold text-white border-l border-slate-800">
+                      <td className="py-2 px-2 text-right font-mono font-bold text-white border-l border-slate-800 whitespace-nowrap">
                         {fmtCompact(catTotal12m)}
                       </td>
-                      <td className="py-2 px-2.5 text-right font-mono text-slate-400">
+                      <td className="py-2 px-2 text-right font-mono text-slate-400 whitespace-nowrap">
                         {fmtCompact(catAvg12m)}
                       </td>
                     </tr>
@@ -3007,7 +3012,7 @@ function App() {
                             className="bg-slate-950/50 hover:bg-slate-800/35 text-[10px]"
                           >
                             <td
-                              className="py-1.5 pl-9 pr-3 sticky left-0 z-10 border-r border-slate-800 text-slate-300"
+                              className="py-1.5 pl-8 pr-2.5 sticky left-0 z-10 border-r border-slate-800 text-slate-300"
                               style={{ backgroundColor: "var(--bg-card)" }}
                             >
                               <button
@@ -3053,7 +3058,7 @@ function App() {
                                         ? `rgba(16, 185, 129, ${(0.05 + mRatio * 0.22).toFixed(2)})`
                                         : undefined,
                                   }}
-                                  className={`py-1.5 px-2 text-right font-mono cursor-pointer hover:ring-1 hover:ring-inset hover:ring-emerald-400 ${
+                                  className={`py-1.5 px-1.5 text-right font-mono cursor-pointer hover:ring-1 hover:ring-inset hover:ring-emerald-400 whitespace-nowrap ${
                                     mv > 0 ? "text-emerald-300" : "text-slate-700"
                                   }`}
                                   title={`${merch.merchant} in ${fmtMonthLabel(m.month)}: ${fmtCurrency(mv)}`}
@@ -3062,10 +3067,10 @@ function App() {
                                 </td>
                               );
                             })}
-                            <td className="py-1.5 px-2.5 text-right font-mono text-slate-300 border-l border-slate-800">
+                            <td className="py-1.5 px-2 text-right font-mono text-slate-300 border-l border-slate-800 whitespace-nowrap">
                               {fmtCompact(merch.total_12m)}
                             </td>
-                            <td className="py-1.5 px-2.5 text-right font-mono text-slate-500">
+                            <td className="py-1.5 px-2 text-right font-mono text-slate-500 whitespace-nowrap">
                               {fmtCompact(merch.avg_12m)}
                             </td>
                           </tr>
@@ -3248,7 +3253,7 @@ function App() {
       tone: "bad",
       text: (
         <>
-          <strong>{overBudget.length}</strong> {overBudget.length === 1 ? "category is" : "categories are"} over budget: {overBudget.slice(0, 3).map((i) => i.link?.category || i.title).join(", ")}.
+          <strong>{overBudget.length}</strong> {overBudget.length === 1 ? "category is" : "categories are"} over budget: {overBudget.slice(0, 3).map((i) => i.link?.category || i.title).join(", ")}{overBudget.length > 3 ? ` and ${overBudget.length - 3} more` : ""}.
         </>
       ),
       action: () => setActiveTab("spending"),
@@ -3985,7 +3990,7 @@ function App() {
                           Liquid Runway &amp; Credit
                         </span>
                       </div>
-                      <span className="badge bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-mono">
+                      <span className="badge bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 font-mono whitespace-nowrap shrink-0">
                         {net_worth.runway_with_mmf_months || net_worth.runway_months || "—"} mo Runway
                       </span>
                     </div>
@@ -4024,7 +4029,7 @@ function App() {
                         Priority Queue
                       </span>
                     </div>
-                    <span className="badge bg-indigo-500/15 text-indigo-300 font-mono">
+                    <span className="badge bg-indigo-500/15 text-indigo-300 font-mono whitespace-nowrap shrink-0">
                       {insights.length} Signals
                     </span>
                   </div>
@@ -4436,16 +4441,35 @@ function App() {
 
               {/* Right 5 Cols: Ranked Insights & Action Feed (Click any insight to open Right-Hand Inspector) */}
               <div className="lg:col-span-5 card-panel rounded-2xl p-5 flex flex-col justify-between">
+                {(() => {
+                  const hasMoreThanQueue = insights.length > 4;
+                  const displayedInsights =
+                    showAllInsights || !hasMoreThanQueue ? insights.slice(0, 12) : insights.slice(4, 11);
+                  return (
                 <div>
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center justify-between gap-2 mb-3">
                     <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                      <span>⚡ Needs Attention & Insights ({insights.length})</span>
+                      <span>
+                        {showAllInsights || !hasMoreThanQueue
+                          ? `⚡ All Insights (${insights.length})`
+                          : `⚡ Additional Signals & Insights (${insights.length - 4})`}
+                      </span>
                     </h2>
-                    <span className="text-[11px] text-slate-400">Click any item to inspect →</span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {hasMoreThanQueue && (
+                        <button
+                          onClick={() => setShowAllInsights(!showAllInsights)}
+                          className="px-2 py-0.5 rounded-md bg-slate-900 border border-slate-700 text-[10px] font-semibold text-indigo-300 hover:border-indigo-500 transition cursor-pointer whitespace-nowrap"
+                        >
+                          {showAllInsights ? "Hide Top 4" : `Show All (${insights.length})`}
+                        </button>
+                      )}
+                      <span className="text-[11px] text-slate-400 whitespace-nowrap">Click to inspect →</span>
+                    </div>
                   </div>
 
                   <div className="space-y-2.5 max-h-[330px] overflow-y-auto pr-1">
-                    {insights.slice(0, 7).map((item) => {
+                    {displayedInsights.map((item) => {
                       const isHigh = item.severity === "high";
                       const isPos = item.severity === "positive";
                       const insKey = `insight-${item.id}`;
@@ -4483,6 +4507,8 @@ function App() {
                     })}
                   </div>
                 </div>
+                  );
+                })()}
               </div>
             </div>
           </div>
@@ -5249,9 +5275,13 @@ function App() {
                       </div>
                       <div className="text-right">
                         <div className="font-bold text-white text-sm">{fmtCurrency(acc.value)}</div>
-                        <div className={`text-[11px] ${acc.gain >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
-                          {fmtCurrency(acc.gain, true)} ({acc.gain_pct}%)
-                        </div>
+                        {acc.gain_pct == null || acc.gain == null ? (
+                          <div className="text-[11px] text-slate-500">Basis N/A</div>
+                        ) : (
+                          <div className={`text-[11px] ${acc.gain >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
+                            {fmtCurrency(acc.gain, true)} ({acc.gain_pct}%)
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -5306,9 +5336,13 @@ function App() {
                         </td>
                         <td className="py-2.5 px-3 text-right font-bold text-white">{fmtCurrency(h.current_value)}</td>
                         <td className="py-2.5 px-3 text-right">
-                          <span className={`font-semibold ${h.gain_dollars >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
-                            {fmtCurrency(h.gain_dollars, true)} ({h.gain_pct >= 0 ? `+${h.gain_pct}%` : `${h.gain_pct}%`})
-                          </span>
+                          {h.gain_pct == null || h.gain_dollars == null ? (
+                            <span className="text-slate-500">—</span>
+                          ) : (
+                            <span className={`font-semibold ${h.gain_dollars >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
+                              {fmtCurrency(h.gain_dollars, true)} ({h.gain_pct >= 0 ? `+${h.gain_pct}%` : `${h.gain_pct}%`})
+                            </span>
+                          )}
                         </td>
                       </tr>
                     ))
@@ -6628,6 +6662,14 @@ function App() {
                   : Number(st.actual_total_gross_monthly || 0);
                 const fixedHousingGrossMo = Number(uiProfile.monthly_pi || 0) + Number(uiProfile.monthly_hoa || 0);
                 const fixedHousingNetMo = Math.max(0, fixedHousingGrossMo - partnerExpected);
+                const avgHousingGrossMo =
+                  st.housing_fixed_gross_monthly != null ? Number(st.housing_fixed_gross_monthly) : fixedHousingGrossMo;
+                const avgHousingNetMo =
+                  st.housing_fixed_net_monthly != null ? Number(st.housing_fixed_net_monthly) : fixedHousingNetMo;
+                const routineLivingMo =
+                  st.routine_living_monthly != null
+                    ? Number(st.routine_living_monthly)
+                    : Math.max(0, necMonthly - (netPartnerMode ? avgHousingNetMo : avgHousingGrossMo));
 
                 // 2. Stacked 12-Month Chart: Necessary vs Everyday Discretionary vs Major Buys
                 const monthlyTierChartData = {
@@ -6919,9 +6961,9 @@ function App() {
                           {fmtCurrency(necAnnual)}/yr
                         </div>
                         <div className="mt-2.5 pt-2 border-t border-slate-800/80 text-[11px] text-slate-400 space-y-0.5">
-                          <div>• Fixed Housing ({netPartnerMode ? `Net ${fmtCurrency(fixedHousingNetMo)}/mo` : `Gross ${fmtCurrency(fixedHousingGrossMo)}/mo`})</div>
+                          <div>• Fixed Housing ({netPartnerMode ? `Net 12M Avg ${fmtCurrency(avgHousingNetMo)}/mo` : `Gross 12M Avg ${fmtCurrency(avgHousingGrossMo)}/mo`})</div>
                           <div>• Utilities, Insurance, Subscriptions, Groceries &amp; Transit</div>
-                          <div>• Routine Living Baseline: {fmtCurrency(Math.max(0, necMonthly - (netPartnerMode ? fixedHousingNetMo : fixedHousingGrossMo)))}/mo</div>
+                          <div>• Routine Living Baseline: {fmtCurrency(routineLivingMo)}/mo</div>
                         </div>
                       </div>
 
@@ -8116,7 +8158,7 @@ function App() {
                               📍 {eq.home_address || homeFull}
                             </span>
                             <span className="badge bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono">
-                              Bought {fmtCompact(eq.purchase_price || 0)} • Est. {fmtCompact(eq.estimated_home_value || 0)} ({(eq.appreciation_pct || 0) >= 0 ? `+${eq.appreciation_pct || 0}%` : `${eq.appreciation_pct || 0}%`})
+                              Bought {fmtCompact(eq.purchase_price || eq.home_price || hvm.purchase_price || 0)} • Est. {fmtCompact(eq.estimated_home_value || 0)} ({(eq.appreciation_pct || 0) >= 0 ? `+${eq.appreciation_pct || 0}%` : `${eq.appreciation_pct || 0}%`})
                             </span>
                             <span className="badge bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 font-mono">
                               {mortgageInputs?.term_years || 15}-Yr @ {mortgageInputs?.rate_pct || 5.75}% vs. Prior {mortgageInputs?.prev_term_years || 30}-Yr @ {mortgageInputs?.prev_rate_pct || 6.5}%
@@ -8209,7 +8251,7 @@ function App() {
                             )}
                           </div>
                           <h2 className="text-base font-bold text-white mt-0.5">
-                            {hvm.address || homeFull} — Bought at {fmtCurrency(eq.purchase_price || 0)} • Est. Worth {fmtCurrency(hvm.estimated_home_value || 0)} Today
+                            {hvm.address || homeFull} — Bought at {fmtCurrency(eq.purchase_price || eq.home_price || hvm.purchase_price || 0)} • Est. Worth {fmtCurrency(hvm.estimated_home_value || 0)} Today
                           </h2>
                           <p className="text-xs text-slate-300 mt-0.5">
                             {hvm.active_valuation_view?.rationale || uiProfile.comps_note || "Compare local market comparable valuations against long-term trend appreciation and equity returns."}
@@ -8318,7 +8360,7 @@ function App() {
                             {fmtCurrency(hvm.estimated_home_value || 0)}
                           </div>
                           <div className={`text-[11px] font-mono ${(hvm.unrealized_appreciation ?? 0) >= 0 ? "text-emerald-400" : "text-rose-400"}`}>
-                            {(hvm.unrealized_appreciation ?? 0) >= 0 ? `+${fmtCurrency(hvm.unrealized_appreciation)}` : fmtCurrency(hvm.unrealized_appreciation ?? 0)} ({(hvm.appreciation_pct ?? 0) >= 0 ? `+${hvm.appreciation_pct}%` : `${hvm.appreciation_pct ?? 0}%`}) vs. {fmtCompact(eq.purchase_price || 0)} Purchase
+                            {(hvm.unrealized_appreciation ?? 0) >= 0 ? `+${fmtCurrency(hvm.unrealized_appreciation)}` : fmtCurrency(hvm.unrealized_appreciation ?? 0)} ({(hvm.appreciation_pct ?? 0) >= 0 ? `+${hvm.appreciation_pct}%` : `${hvm.appreciation_pct ?? 0}%`}) vs. {fmtCompact(eq.purchase_price || eq.home_price || hvm.purchase_price || 0)} Purchase
                           </div>
                           <div className="text-[10px] text-slate-400">
                             10-Yr Projected Value (@ {hvm.annual_appreciation_rate_pct ?? 2.0}%/yr): <strong className="text-slate-200 font-mono">{fmtCompact(hvm.projected_home_value_10yr || 0)}</strong>
@@ -11176,10 +11218,33 @@ function App() {
                     className="flex-1 px-2.5 py-1.5 rounded bg-slate-900 border border-slate-700 text-xs text-white"
                   />
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       if (!tellerAppId) {
                         showToast("Enter your Teller App ID first", "error");
                         return;
+                      }
+                      if (!window.TellerConnect) {
+                        try {
+                          await new Promise((resolve, reject) => {
+                            const existing = document.querySelector('script[data-teller-connect="1"]');
+                            if (existing) {
+                              if (window.TellerConnect) return resolve();
+                              existing.addEventListener("load", resolve, { once: true });
+                              existing.addEventListener("error", reject, { once: true });
+                              return;
+                            }
+                            const s = document.createElement("script");
+                            s.src = "https://cdn.teller.io/connect/connect.js";
+                            s.async = true;
+                            s.dataset.tellerConnect = "1";
+                            s.onload = resolve;
+                            s.onerror = reject;
+                            document.head.appendChild(s);
+                          });
+                        } catch (err) {
+                          showToast("Could not load Teller Connect script (check network)", "error");
+                          return;
+                        }
                       }
                       const tc = window.TellerConnect?.setup({
                         applicationId: tellerAppId,

@@ -174,9 +174,16 @@ def build_insights(period, spending, recurring, anomalies, duplicates, networth,
                 ),
                 0, {"inspector": "cards", "tab": "overview"}, kind="cashflow")
         elif rw < 3:
-            add("runway-low", "high", "Only {0} months of cash on hand".format(rw),
-                "Aim for 3–6 months of expenses ({0}–{1}).".format(_money(avg_sp * 3), _money(avg_sp * 6)),
-                avg_sp * 3 - networth["cash"], {"inspector": "cards", "tab": "overview"}, kind="cashflow")
+            if mmf_cash > 0 and total_rw is not None:
+                add("runway-low", "high", "{0} mo liquid runway ({1} checking + {2} MMF)".format(
+                    total_rw, _money(networth["cash"]), _money(mmf_cash)),
+                    "Checking alone covers {0} mo; aim for 3–6 months of net expenses ({1}–{2}).".format(
+                        rw, _money(net_avg_sp * 3), _money(net_avg_sp * 6)),
+                    max(0.0, net_avg_sp * 3 - total_liquid_cash), {"inspector": "cards", "tab": "overview"}, kind="cashflow")
+            else:
+                add("runway-low", "high", "Only {0} months of cash on hand".format(rw),
+                    "Aim for 3–6 months of expenses ({0}–{1}).".format(_money(avg_sp * 3), _money(avg_sp * 6)),
+                    avg_sp * 3 - networth["cash"], {"inspector": "cards", "tab": "overview"}, kind="cashflow")
         elif rw > 12:
             idle = networth["cash"] - avg_sp * 6
             add("runway-high", "low", "{0} months of cash may be more than you need".format(int(rw)),

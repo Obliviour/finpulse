@@ -711,6 +711,9 @@ def build_investments(conn, scope):
 
     total_val = sum(float(h["current_value"] or 0.0) for h in realized_rows)
     total_cost = sum(float(h["cost_basis_total"] or 0.0) for h in realized_rows)
+    total_costed_val = sum(
+        float(h["current_value"] or 0.0) for h in realized_rows if float(h["cost_basis_total"] or 0.0) > 0
+    )
 
     holdings, by_class, by_inst, by_bucket = [], defaultdict(float), defaultdict(float), defaultdict(float)
     by_account = {}
@@ -728,15 +731,18 @@ def build_investments(conn, scope):
             cash_like += val
         acc = by_account.setdefault(h["account_id"], {"account_id": h["account_id"], "account_name": h["account_name"],
                                                       "institution": h["institution"], "tax_bucket": tax_bucket(h["account_name"]),
-                                                      "value": 0.0, "cost": 0.0, "day_change": 0.0, "positions": 0})
+                                                      "value": 0.0, "costed_value": 0.0, "cost": 0.0, "day_change": 0.0, "positions": 0})
         acc["value"] += val
+        if cost > 0:
+            acc["costed_value"] += val
         acc["cost"] += cost
         acc["day_change"] += dchg
         acc["positions"] += 1
         holdings.append({
             "id": h["id"], "account_id": h["account_id"], "account_name": h["account_name"], "institution": h["institution"],
             "symbol": h["symbol"], "name": h["name"], "shares": float(h["shares"] or 0.0), "current_price": r2(h["current_price"] or 0.0),
-            "current_value": r2(val), "cost_basis_total": r2(cost), "gain_dollars": r2(val - cost),
+            "current_value": r2(val), "cost_basis_total": r2(cost),
+            "gain_dollars": r2(val - cost) if cost > 0 else None,
             "gain_pct": round((val - cost) / cost * 100.0, 2) if cost > 0 else None,
             "day_change_pct": round(dpct, 2), "day_change": r2(dchg),
             "weight_pct": round(val / total_val * 100.0, 2) if total_val > 0 else 0.0,
@@ -763,8 +769,9 @@ def build_investments(conn, scope):
 
     accounts = []
     for a in by_account.values():
-        a["gain"] = r2(a["value"] - a["cost"])
-        a["gain_pct"] = round((a["value"] - a["cost"]) / a["cost"] * 100.0, 2) if a["cost"] > 0 else None
+        costed_val = a.pop("costed_value", a["value"])
+        a["gain"] = r2(costed_val - a["cost"]) if a["cost"] > 0 else None
+        a["gain_pct"] = round((costed_val - a["cost"]) / a["cost"] * 100.0, 2) if a["cost"] > 0 else None
         a["value"], a["cost"], a["day_change"] = r2(a["value"]), r2(a["cost"]), r2(a["day_change"])
         accounts.append(a)
     accounts.sort(key=lambda a: a["value"], reverse=True)
@@ -852,8 +859,8 @@ def build_investments(conn, scope):
     return {
         "total_value": r2(total_val),
         "total_cost_basis": r2(total_cost),
-        "total_gain_dollars": r2(total_val - total_cost),
-        "total_gain_pct": round((total_val - total_cost) / total_cost * 100.0, 2) if total_cost > 0 else None,
+        "total_gain_dollars": r2(total_costed_val - total_cost) if total_cost > 0 else 0.0,
+        "total_gain_pct": round((total_costed_val - total_cost) / total_cost * 100.0, 2) if total_cost > 0 else None,
         "home_investment": home_investment,
         "total_value_with_home_equity": r2(total_val + mkt_equity),
         "total_value_with_home_asset": r2(total_val + home_val),
